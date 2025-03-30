@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDTP_Project1.Data;
+using SDTP_Project1.Models;
+using System.Threading.Tasks;
 
 namespace SDTP_Project1.Controllers
 {
@@ -8,18 +10,16 @@ namespace SDTP_Project1.Controllers
     {
         private readonly AirQualityDbContext _context;
 
-        // DI for the DB context
         public HomeController(AirQualityDbContext context)
         {
             _context = context;
         }
 
-        // GET: Home/Index
         public async Task<IActionResult> Index()
         {
-            // Retrieve 5 locations from the database.
-            var locations = await _context.Locations.Take(5).ToListAsync();
-            return View(locations);
+            // Retrieve all air quality records from the database.
+            var data = await _context.AirQualityData.ToListAsync();
+            return View(data);
         }
     }
 }

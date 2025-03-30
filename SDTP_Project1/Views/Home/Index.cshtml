@@ -1,34 +1,41 @@
-﻿@model IEnumerable<SDTP_Project1.Models.Location>
-
+﻿@model IEnumerable<SDTP_Project1.Models.AirQualityData>
 @{
-    ViewData["Title"] = "Air Quality Dashboard";
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Air Quality Dashboard - Colombo</h2>
-<div id="map" style="height: 500px;"></div>
+<div class="main-content">
+    <!-- Left Column: Cards container -->
+    <div class="cards-container">
+        @foreach (var data in Model)
+        {
+            <div class="card">
+                <h5>@data.District</h5>
+                <p><strong>AQI:</strong> @data.AQI</p>
+                <p><strong>Time:</strong> @data.Timestamp.ToString("g")</p>
+                <p><strong>PM2.5:</strong> @data.PM2_5</p>
+                <p><strong>PM10:</strong> @data.PM10</p>
+                <!-- Add additional fields if needed -->
+            </div>
+        }
+    </div>
+
+    <!-- Right Column: Map -->
+    <div id="map"></div>
+</div>
 
 @section Scripts {
-    <!-- Load Leaflet from CDN -->
+    <!-- Load Leaflet CSS and JS from CDN -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+    <!-- Reference external home.js for map initialization -->
+    <script src="~/js/home.js"></script>
+
     <script>
-        // Initialize the map centered on Colombo (approximate coordinates)
-        var map = L.map('map').setView([6.9271, 79.8612], 12);
-
-        // Add OpenStreetMap tile layer.
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // Get the locations passed from the controller
-        var locations = @Html.Raw(Json.Serialize(Model));
-
-        // Add markers for each location
-        locations.forEach(function(loc) {
-            L.marker([loc.latitude, loc.longitude]).addTo(map)
-                .bindPopup("<b>" + loc.name + "</b><br>Air Quality Index: " + loc.airQualityIndex);
+        document.addEventListener("DOMContentLoaded", function () {
+            var locations = @Html.Raw(Json.Serialize(Model));
+            initMap(locations);
         });
     </script>
 }
