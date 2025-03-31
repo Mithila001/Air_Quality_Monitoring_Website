@@ -5,8 +5,8 @@ namespace SDTP_Project1.Models
 {
     public class SensorDataViewModel
     {
-        public string SensorID { get; set; } = string.Empty;
-        public string City { get; set; } = string.Empty;
+        public string SensorID { get; set; }
+        public string City { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         // For demonstration, here we include a list of readings. 

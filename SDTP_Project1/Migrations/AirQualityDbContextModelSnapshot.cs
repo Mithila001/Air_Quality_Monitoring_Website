@@ -65,67 +65,6 @@ namespace SDTP_Project1.Migrations
                     b.ToTable("AirQualityData");
                 });
 
-            modelBuilder.Entity("SDTP_Project1.Models.AlertThresholdSetting", b =>
-                {
-                    b.Property<int>("ThresholdId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ThresholdId"));
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Parameter")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<float>("ThresholdValue")
-                        .HasColumnType("real");
-
-                    b.HasKey("ThresholdId");
-
-                    b.ToTable("AlertThresholdSettings");
-                });
-
-            modelBuilder.Entity("SDTP_Project1.Models.MonitoringAdmin", b =>
-                {
-                    b.Property<int>("AdminId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminId"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
-
-                    b.HasKey("AdminId");
-
-                    b.ToTable("MonitoringAdmins");
-                });
-
             modelBuilder.Entity("SDTP_Project1.Models.Sensor", b =>
                 {
                     b.Property<string>("SensorID")
@@ -154,43 +93,6 @@ namespace SDTP_Project1.Migrations
                     b.HasKey("SensorID");
 
                     b.ToTable("Sensors");
-                });
-
-            modelBuilder.Entity("SDTP_Project1.Models.SimulationConfiguration", b =>
-                {
-                    b.Property<int>("ConfigId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConfigId"));
-
-                    b.Property<float>("BaselineCO")
-                        .HasColumnType("real");
-
-                    b.Property<float>("BaselineNO2")
-                        .HasColumnType("real");
-
-                    b.Property<float>("BaselineO3")
-                        .HasColumnType("real");
-
-                    b.Property<float>("BaselinePM10")
-                        .HasColumnType("real");
-
-                    b.Property<float>("BaselinePM2_5")
-                        .HasColumnType("real");
-
-                    b.Property<float>("BaselineSO2")
-                        .HasColumnType("real");
-
-                    b.Property<int>("FrequencyInSeconds")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ConfigId");
-
-                    b.ToTable("SimulationConfigurations");
                 });
 
             modelBuilder.Entity("SDTP_Project1.Models.AirQualityData", b =>

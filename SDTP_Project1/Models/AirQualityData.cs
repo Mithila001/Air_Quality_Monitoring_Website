@@ -10,7 +10,7 @@ namespace SDTP_Project1.Models
         public int MeasurementID { get; set; }
 
         [Required]
-        public string SensorID { get; set; } = string.Empty;
+        public string SensorID { get; set; }
 
         public DateTime Timestamp { get; set; }
         public double? PM2_5 { get; set; }
