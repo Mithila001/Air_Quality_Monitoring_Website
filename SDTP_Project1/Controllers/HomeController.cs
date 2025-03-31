@@ -34,5 +34,9 @@ namespace SDTP_Project1.Controllers
 
             return View(sensorData);
         }
+        public IActionResult TestTailwind()
+        {
+            return View();
+        }
     }
 }

@@ -1,0 +1,81 @@
+﻿@model IEnumerable<SDTP_Project1.Models.Sensor>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="mb-6">
+    <h2 class="text-2xl font-semibold text-gray-700">Sensor Management Dashboard</h2>
+    <a class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+       href="@Url.Action("CreateSensor", "Admin")">Add New Sensor</a>
+</div>
+
+<div class="overflow-x-auto">
+    <table class="min-w-full bg-white shadow rounded-lg">
+        <thead>
+            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                <th class="py-3 px-4 text-left">SensorID</th>
+                <th class="py-3 px-4 text-left">City</th>
+                <th class="py-3 px-4 text-left">Latitude</th>
+                <th class="py-3 px-4 text-left">Longitude</th>
+                <th class="py-3 px-4 text-left">Status</th>
+                <th class="py-3 px-4 text-left">Registration Date</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700 text-sm font-light">
+            @foreach (var sensor in Model)
+            {
+                <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <td class="py-3 px-4">@sensor.SensorID</td>
+                    <td class="py-3 px-4">@sensor.City</td>
+                    <td class="py-3 px-4">@sensor.Latitude</td>
+                    <td class="py-3 px-4">@sensor.Longitude</td>
+                    <td class="py-3 px-4">@((sensor.IsActive) ? "Active" : "Inactive")</td>
+                    <td class="py-3 px-4">@sensor.RegistrationDate.ToString("yyyy-MM-dd")</td>
+                    <td class="py-3 px-4 text-center">
+                        <button class="edit-btn bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded" data-id="@sensor.SensorID">
+                            Edit
+                        </button>
+                        <form method="post" asp-action="DeleteSensor" asp-controller="Admin" class="inline-block">
+                            <input type="hidden" name="id" value="@sensor.SensorID" />
+                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">
+                                Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal for editing sensor -->
+<div id="editSensorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg">
+        <div class="flex justify-between items-center bg-gray-100 px-4 py-2 border-b">
+            <h3 class="text-lg font-semibold text-gray-700">Edit Sensor</h3>
+            <button id="closeModal" class="text-gray-700 text-2xl">&times;</button>
+        </div>
+        <div class="p-4" id="editSensorContent">
+            <!-- AJAX-loaded partial view will appear here -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $(".edit-btn").click(function(){
+                var sensorId = $(this).data("id");
+                $.get('@Url.Action("EditSensor", "Admin")', { id: sensorId }, function(data){
+                    $("#editSensorContent").html(data);
+                    $("#editSensorModal").removeClass("hidden");
+                });
+            });
+
+            $("#closeModal").click(function(){
+                $("#editSensorModal").addClass("hidden");
+            });
+        });
+    </script>
+}

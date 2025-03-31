@@ -1,0 +1,29 @@
+﻿@model SDTP_Project1.Models.Sensor
+
+<form asp-action="EditSensor" method="post" class="space-y-4">
+    <input type="hidden" asp-for="SensorID" />
+
+    <div>
+        <label asp-for="City" class="block text-sm font-medium text-gray-700"></label>
+        <input asp-for="City" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        <span asp-validation-for="City" class="text-red-600 text-sm"></span>
+    </div>
+    <div>
+        <label asp-for="Latitude" class="block text-sm font-medium text-gray-700"></label>
+        <input asp-for="Latitude" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        <span asp-validation-for="Latitude" class="text-red-600 text-sm"></span>
+    </div>
+    <div>
+        <label asp-for="Longitude" class="block text-sm font-medium text-gray-700"></label>
+        <input asp-for="Longitude" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
+        <span asp-validation-for="Longitude" class="text-red-600 text-sm"></span>
+    </div>
+    <div>
+        <label asp-for="Description" class="block text-sm font-medium text-gray-700"></label>
+        <textarea asp-for="Description" class="mt-1 block w-full border border-gray-300 rounded-md p-2"></textarea>
+        <span asp-validation-for="Description" class="text-red-600 text-sm"></span>
+    </div>
+    <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded">
+        Save Changes
+    </button>
+</form>

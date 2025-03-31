@@ -9,37 +9,31 @@
     @* <link rel="stylesheet" href="~/css/app.css"/> *@
     @* <link rel="stylesheet" href="~/css/app.css"/> *@
     <link rel="stylesheet" href="~/css/home.css" />
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @RenderSection("Styles", required: false)
 </head>
-<body>
-    <header class="custom-header">
-        <div class="header-left">
-            <img src="~/images/icon2.jpg" alt="Dashboard Icon" class="header-icon" />
-            <button type="button" class="btn ranking-btn">See Full Rankings</button>
-            <div class="search-group">
-                <input type="text" class="search-bar" placeholder="Search..." />
-                <button class="search-btn" type="button">
-                    <img src="~/images/searchIcon.png" alt="Search Icon" class="search-icon" />
-                </button>
+<body class="bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div>
+                <a class="text-xl font-bold text-gray-800" href="@Url.Action("Index", "Home")">Home</a>
+                <a class="ml-6 text-xl font-bold text-gray-800" href="@Url.Action("Index", "Admin")">Admin</a>
             </div>
-        </div>
-        <div class="header-right">
-            <button type="button" class="btn contribute-btn">Contribute</button>
-            <img src="~/images/profile.png" alt="User Icon" class="user-icon" />
         </div>
     </header>
 
-    <main role="main">
+    <main class="container mx-auto p-4">
         @RenderBody()
     </main>
 
-    <footer>
-        <!-- Optional footer content -->
+    <footer class="bg-white border-t mt-8">
+        <div class="max-w-7xl mx-auto px-4 py-4 text-center text-gray-600">
+            &copy; @DateTime.Now.Year - SDTP_Project1
+        </div>
     </footer>
 
-    <!-- JS libraries -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/jquery.min.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

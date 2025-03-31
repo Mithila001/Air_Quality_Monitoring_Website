@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SDTP_Project1.Models
 {
     public class SensorDataViewModel
     {
+        [Key]
         public string SensorID { get; set; }
         public string City { get; set; }
         public double Latitude { get; set; }
