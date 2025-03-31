@@ -6,10 +6,10 @@ namespace SDTP_Project1.Models
     public class Sensor
     {
         [Key]
-        public string SensorID { get; set; }
+        public string SensorID { get; set; } = string.Empty;
 
         [Required]
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
 
         [Required]
         public double Latitude { get; set; }
@@ -19,6 +19,6 @@ namespace SDTP_Project1.Models
 
         public DateTime RegistrationDate { get; set; }
         public bool IsActive { get; set; } = true;
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

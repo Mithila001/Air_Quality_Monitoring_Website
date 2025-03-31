@@ -1,0 +1,20 @@
+﻿@model SDTP_Project1.Models.Sensor
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Register New Sensor</h2>
+<form asp-action="CreateSensor" method="post">
+    <div class="form-group">
+        <label asp-for="SensorID"></label>
+        <input asp-for="SensorID" class="form-control" />
+        <span asp-validation-for="SensorID" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="City"></label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+    <!-- Add fields for Latitude, Longitude, Description, etc. -->
+    <button type="submit" class="btn btn-success">Submit</button>
+</form>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SDTP_Project1.Data;
 
@@ -11,9 +12,11 @@ using SDTP_Project1.Data;
 namespace SDTP_Project1.Migrations
 {
     [DbContext(typeof(AirQualityDbContext))]
-    partial class AirQualityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250331110018_FixAlertThresholdSettingPK")]
+    partial class FixAlertThresholdSettingPK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

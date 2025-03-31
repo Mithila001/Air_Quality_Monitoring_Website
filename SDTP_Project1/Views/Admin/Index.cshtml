@@ -1,0 +1,37 @@
+﻿@model IEnumerable<SDTP_Project1.Models.Sensor>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>System Dashboard</h2>
+<div>
+    <h3>Sensors</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>SensorID</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sensor in Model)
+            {
+                <tr>
+                    <td>@sensor.SensorID</td>
+                    <td>@sensor.City</td>
+                    <td>@(sensor.IsActive ? "Active" : "Inactive")</td>
+                    <td>
+                        <a href="@Url.Action("EditSensor", "Admin", new { id = sensor.SensorID })">Edit</a> |
+                        <form asp-action="DeactivateSensor" asp-controller="Admin" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@sensor.SensorID" />
+                            <button type="submit" class="btn btn-warning btn-sm">Deactivate</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="@Url.Action("CreateSensor", "Admin")">Register New Sensor</a>
+</div>

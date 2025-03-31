@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SDTP_Project1.Data;
-
+using SDTP_Project1.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +10,10 @@ builder.Services.AddControllersWithViews();
 // Register the DB context with DI
 builder.Services.AddDbContext<AirQualityDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Dependency Injection: Register repositories.
+builder.Services.AddScoped<ISensorRepository, SensorRepository>();
+// Repeat for other repositories (MonitoringAdmin, SimulationConfiguration, AlertThresholdSetting)
 
 var app = builder.Build();
 
@@ -30,6 +34,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Admin}/{action=Index}/{id?}");
 
 app.Run();
