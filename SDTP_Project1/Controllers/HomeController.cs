@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDTP_Project1.Data;
 using SDTP_Project1.Models;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SDTP_Project1.Controllers
@@ -17,9 +18,21 @@ namespace SDTP_Project1.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Retrieve all air quality records from the database.
-            var data = await _context.AirQualityData.ToListAsync();
-            return View(data);
+            var data = await _context.AirQualityData.Include(a => a.Sensor).ToListAsync();
+
+            // Group by SensorID and create a view model for each sensor.
+            var sensorData = data.GroupBy(a => a.SensorID)
+                .Select(g => new SensorDataViewModel
+                {
+                    SensorID = g.Key,
+                    City = g.First().Sensor.City,
+                    Latitude = g.First().Sensor.Latitude,
+                    Longitude = g.First().Sensor.Longitude,
+                    Readings = g.ToList()
+                })
+                .ToList();
+
+            return View(sensorData);
         }
     }
 }

@@ -1,21 +1,22 @@
-﻿@model IEnumerable<SDTP_Project1.Models.AirQualityData>
+﻿@using Newtonsoft.Json
+@model IEnumerable<SDTP_Project1.Models.SensorDataViewModel>
+
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    // Order the sensors by descending LatestAQI
+    var orderedSensors = Model.OrderByDescending(s => s.LatestAQI);
 }
 
 <div class="main-content">
     <!-- Left Column: Cards container -->
-    <div class="cards-container">
-        @foreach (var data in Model)
+    <div class="cards-container scrollable">
+        @foreach (var sensor in orderedSensors)
         {
             <div class="card">
-                <h5>@data.District</h5>
-                <p><strong>AQI:</strong> @data.AQI</p>
-                <p><strong>Time:</strong> @data.Timestamp.ToString("g")</p>
-                <p><strong>PM2.5:</strong> @data.PM2_5</p>
-                <p><strong>PM10:</strong> @data.PM10</p>
-                <!-- Add additional fields if needed -->
+                <h5>@sensor.City</h5>
+                <p><strong>Latest AQI:</strong> @sensor.LatestAQI</p>
+                <p><strong>Total Readings:</strong> @sensor.Readings.Count</p>
             </div>
         }
     </div>
@@ -26,16 +27,39 @@
 
 @section Scripts {
     <!-- Load Leaflet CSS and JS from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Load Chart.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Reference external home.js for map initialization -->
     <script src="~/js/home.js"></script>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            var locations = @Html.Raw(Json.Serialize(Model));
-            initMap(locations);
+            // Pass sensor-level aggregated data including readings to JavaScript.
+            var sensorLocations = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            Model.Select(s => new
+            {
+                s.City,
+                s.Latitude,
+                s.Longitude,
+                AQI = s.LatestAQI,
+                Readings = s.Readings.Select(r => new
+                {
+                    Timestamp = r.Timestamp.ToString("g"),
+                    r.PM2_5,
+                    r.PM10,
+                    r.O3,
+                    r.NO2,
+                    r.SO2,
+                    r.CO,
+                    r.AQI
+                })
+            })
+        ));
+            initMap(sensorLocations);
         });
     </script>
 }

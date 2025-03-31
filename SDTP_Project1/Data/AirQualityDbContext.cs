@@ -8,5 +8,6 @@ namespace SDTP_Project1.Data
         public AirQualityDbContext(DbContextOptions<AirQualityDbContext> options) : base(options) { }
 
         public DbSet<AirQualityData> AirQualityData { get; set; }
+        public DbSet<Sensor> Sensors { get; set; }
     }
 }

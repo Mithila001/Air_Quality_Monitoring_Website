@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SDTP_Project1.Models
 {
@@ -7,7 +8,10 @@ namespace SDTP_Project1.Models
     {
         [Key]
         public int MeasurementID { get; set; }
-        public string District { get; set; }
+
+        [Required]
+        public string SensorID { get; set; }
+
         public DateTime Timestamp { get; set; }
         public double? PM2_5 { get; set; }
         public double? PM10 { get; set; }
@@ -16,8 +20,9 @@ namespace SDTP_Project1.Models
         public double? SO2 { get; set; }
         public double? CO { get; set; }
         public int? AQI { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public string SensorID { get; set; }
+
+        // Navigation property: sensor details are in a separate table.
+        [ForeignKey("SensorID")]
+        public Sensor Sensor { get; set; }
     }
 }
