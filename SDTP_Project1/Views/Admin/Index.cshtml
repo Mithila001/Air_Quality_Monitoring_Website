@@ -3,61 +3,101 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="mb-6">
-    <h2 class="text-2xl font-semibold text-gray-700">Sensor Management Dashboard</h2>
-    <a class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-       href="@Url.Action("CreateSensor", "Admin")">Add New Sensor</a>
-</div>
 
-<div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow rounded-lg">
-        <thead>
-            <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-3 px-4 text-left">SensorID</th>
-                <th class="py-3 px-4 text-left">City</th>
-                <th class="py-3 px-4 text-left">Latitude</th>
-                <th class="py-3 px-4 text-left">Longitude</th>
-                <th class="py-3 px-4 text-left">Status</th>
-                <th class="py-3 px-4 text-left">Registration Date</th>
-                <th class="py-3 px-4 text-center">Actions</th>
-            </tr>
-        </thead>
-        <tbody class="text-gray-700 text-sm font-light">
+<div class="container-fluid mt-4">
+    @* Dashboard Info Sector *@
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
+                <div class="card-body">
+                    <h5 class="card-title ">Total Sensors</h5>
+                    <p class="card-text fs-3 fw-bold">@(Model.Count())</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
+                <div class="card-body">
+                    <h5 class="card-title">Average Air Quality</h5>
+                    <p class="card-text fs-3 fw-bold">XX ppm</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
+                <div class="card-body">
+                    <h5 class="card-title">Deactivated Sensors</h5>
+                    <p id="deactivatedCount" class="card-text fs-3 fw-bold">@(Model.Count(s => !s.IsActive))</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end  mt-4">
+        <a class="btn btn-primary" href="@Url.Action("CreateSensor", "Admin")">Add New Sensor</a>
+    </div>
+
+    <div class="mt-4 overflow-auto" style="max-height: 60vh;">
+        <div class="row g-3">
             @foreach (var sensor in Model)
             {
-                <tr class="border-b border-gray-200 hover:bg-gray-50">
-                    <td class="py-3 px-4">@sensor.SensorID</td>
-                    <td class="py-3 px-4">@sensor.City</td>
-                    <td class="py-3 px-4">@sensor.Latitude</td>
-                    <td class="py-3 px-4">@sensor.Longitude</td>
-                    <td class="py-3 px-4">@((sensor.IsActive) ? "Active" : "Inactive")</td>
-                    <td class="py-3 px-4">@sensor.RegistrationDate.ToString("yyyy-MM-dd")</td>
-                    <td class="py-3 px-4 text-center">
-                        <button class="edit-btn bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded" data-id="@sensor.SensorID">
-                            Edit
-                        </button>
-                        <form method="post" asp-action="DeleteSensor" asp-controller="Admin" class="inline-block">
-                            <input type="hidden" name="id" value="@sensor.SensorID" />
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">
-                                Remove
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div class="row g-3 flex-grow-1">
+                                <div class="col-md-3">
+                                    <h6 class="fw-semibold">Sensor ID</h6>
+                                    <p class="text-secondary">@sensor.SensorID</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6 class="fw-semibold">City</h6>
+                                    <p class="text-secondary">@sensor.City</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6 class="fw-semibold">Coordinates</h6>
+                                    <p class="text-secondary">@sensor.Latitude, @sensor.Longitude</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h6 class="fw-semibold">Status</h6>
+                                    <span id="status-@sensor.SensorID" class="badge @(sensor.IsActive ? "bg-success" : "bg-danger")">
+                                        @(sensor.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button class="edit-btn btn btn-warning btn-sm" data-id="@sensor.SensorID">Edit</button>
+
+                                <button class="btn btn-secondary btn-sm sensor-toggle"
+                                        data-id="@sensor.SensorID"
+                                        data-isactive="@sensor.IsActive">
+                                    @(sensor.IsActive ? "Disable" : "Enable")
+                                </button>
+
+
+                                <button class="btn btn-danger btn-sm" onclick="confirmDelete('@sensor.SensorID')">Delete</button>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    </div>
 </div>
 
-<!-- Modal for editing sensor -->
-<div id="editSensorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-lg">
-        <div class="flex justify-between items-center bg-gray-100 px-4 py-2 border-b">
-            <h3 class="text-lg font-semibold text-gray-700">Edit Sensor</h3>
-            <button id="closeModal" class="text-gray-700 text-2xl">&times;</button>
-        </div>
-        <div class="p-4" id="editSensorContent">
-            <!-- AJAX-loaded partial view will appear here -->
+<div id="editSensorModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Sensor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editSensorContent">
+            </div>
         </div>
     </div>
 </div>
@@ -65,17 +105,50 @@
 @section Scripts {
     <script>
         $(document).ready(function(){
+            // Open modal with form content
             $(".edit-btn").click(function(){
                 var sensorId = $(this).data("id");
                 $.get('@Url.Action("EditSensor", "Admin")', { id: sensorId }, function(data){
                     $("#editSensorContent").html(data);
-                    $("#editSensorModal").removeClass("hidden");
+                    $("#editSensorModal").modal('show');
+                }).fail(function(xhr){
+                    console.error("Error loading sensor form:", xhr.responseText);
                 });
             });
 
-            $("#closeModal").click(function(){
-                $("#editSensorModal").addClass("hidden");
+            // Delegate submit event for the dynamically loaded form
+            $(document).on("submit", "#editSensorContent form", function(e) {
+                e.preventDefault(); // Prevent normal form submission
+                console.log("Form submit intercepted.", e);
+
+                var form = $(this);
+                console.log("Form action attribute:", form.attr("action"));
+                console.log("Serialized form data:", form.serialize());
+
+                // Log before AJAX call
+                console.log("AJAX call is about to be made.");
+
+                $.ajax({
+                    url: form.attr("action"),
+                    type: "POST",
+                    data: form.serialize(),
+                    success: function(response) {
+                        console.log("AJAX call succeeded.", response);
+                        if (response.success) {
+                            $("#editSensorModal").modal('hide'); // Close modal on success
+                            location.reload(); // Reload page to show updated data
+                        } else {
+                            // Assume response is HTML (partial view with errors)
+                            $("#editSensorContent").html(response);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Error updating sensor:", xhr.responseText);
+                    }
+                });
             });
         });
     </script>
+
 }
+
