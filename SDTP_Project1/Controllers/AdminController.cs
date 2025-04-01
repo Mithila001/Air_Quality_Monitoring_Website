@@ -30,16 +30,38 @@ public class AdminController : Controller
         return View();
     }
 
+    // Create a Sensor
     [HttpPost]
     public async Task<IActionResult> CreateSensor(Sensor sensor)
     {
+        // Generate SensorID before validation
+        if (!string.IsNullOrWhiteSpace(sensor.City))
+        {
+            sensor.SensorID = $"S_{sensor.City.Trim()}_{DateTime.Now:yyyyMMddHHmm}";
+        }
+        else
+        {
+            ModelState.AddModelError("City", "City is required.");
+            return View(sensor);
+        }
+
+        // Remove ModelState error for SensorID because we are generating it manually
+        ModelState.Remove("SensorID");
+
+        // Ensure RegistrationDate is properly set
+        sensor.RegistrationDate = DateTime.Now;
+
+        // Check ModelState validity after adjustments
         if (ModelState.IsValid)
         {
             await _sensorRepository.AddSensorAsync(sensor);
+            TempData["SuccessMessage"] = "Sensor added successfully!";
             return RedirectToAction("Index");
         }
+
         return View(sensor);
     }
+
 
     // Edit sensor
     [HttpGet]

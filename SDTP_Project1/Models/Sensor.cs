@@ -8,13 +8,13 @@ namespace SDTP_Project1.Models
         [Key]
         public string SensorID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "City is required.")]
         public string City { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Latitude is required.")]
         public double Latitude { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Longitude is required.")]
         public double Longitude { get; set; }
 
         public DateTime RegistrationDate { get; set; }
