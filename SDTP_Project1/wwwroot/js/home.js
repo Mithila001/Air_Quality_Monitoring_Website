@@ -86,7 +86,7 @@
     });
 }
 
-// Example function to determine color code based on AQI.
+// Function to determine color code based on AQI.
 function getAQIColor(aqi) {
     if (aqi == null) return "gray";
     if (aqi <= 50) return "green";

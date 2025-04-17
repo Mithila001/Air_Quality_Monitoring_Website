@@ -1,0 +1,31 @@
+﻿@* trigger button *@
+<button id="devToolsBtn" class="btn btn-outline-warning ms-3">
+    Dev Tools
+</button>
+
+@* Bootstrap Modal *@
+<div class="modal fade" id="devToolsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Development Mode</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <strong>Dev Mode:</strong>
+                    <span id="devModeStatus">…</span>
+                    <button id="toggleDevMode" class="btn btn-sm btn-secondary ms-2">
+                        Toggle
+                    </button>
+                </p>
+                <p>
+                    <button id="clearTodayData" class="btn btn-sm btn-danger">
+                        Clear Today’s Data
+                    </button>
+                </p>
+                <div id="devToolsMessage" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>

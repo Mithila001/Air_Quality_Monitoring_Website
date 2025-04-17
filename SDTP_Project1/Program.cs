@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SDTP_Project1.Data;
 using SDTP_Project1.Repositories;
+using SDTP_Project1.Services;
+using SDTP_Project1.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,12 @@ builder.Services.AddDbContext<AirQualityDbContext>(options =>
 // Dependency Injection: Register repositories.
 builder.Services.AddScoped<ISensorRepository, SensorRepository>();
 // Repeat for other repositories (MonitoringAdmin, SimulationConfiguration, AlertThresholdSetting)
+
+// Load DevModeOptions from appsettings.json
+builder.Services.Configure<DevModeOptions>(
+    builder.Configuration.GetSection("DevModeOptions"));
+// Register the hosted background simulation service
+builder.Services.AddHostedService<SensorDataSimulationService>();
 
 var app = builder.Build();
 

@@ -53,7 +53,7 @@ namespace SDTP_Project1.Migrations
                         principalTable: "Sensors",
                         principalColumn: "SensorID",
                         onDelete: ReferentialAction.Cascade);
-                });
+            //    });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AirQualityData_SensorID",

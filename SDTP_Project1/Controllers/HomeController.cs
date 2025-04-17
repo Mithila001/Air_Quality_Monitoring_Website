@@ -21,7 +21,9 @@ namespace SDTP_Project1.Controllers
             var data = await _context.AirQualityData.Include(a => a.Sensor).ToListAsync();
 
             // Group by SensorID and create a view model for each sensor.
-            var sensorData = data.GroupBy(a => a.SensorID)
+            var sensorData = data
+                .Where(a => a.Sensor.IsActive) // Filter for active sensors
+                .GroupBy(a => a.SensorID)
                 .Select(g => new SensorDataViewModel
                 {
                     SensorID = g.Key,
