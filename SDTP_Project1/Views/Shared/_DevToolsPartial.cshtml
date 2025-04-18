@@ -1,30 +1,37 @@
-﻿@* trigger button *@
+﻿@* Trigger Button *@
 <button id="devToolsBtn" class="btn btn-outline-warning ms-3">
-    Dev Tools
+    <i class="fas fa-tools me-1"></i> Dev Tools
 </button>
 
-@* Bootstrap Modal *@
+@* Styled Modal *@
 <div class="modal fade" id="devToolsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Development Mode</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white border border-warning rounded-3 shadow-lg">
+            <div class="modal-header border-bottom border-warning">
+                <h5 class="modal-title">
+                    <i class="fas fa-code-branch me-2 text-warning"></i> Development Mode
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <p>
-                    <strong>Dev Mode:</strong>
-                    <span id="devModeStatus">…</span>
-                    <button id="toggleDevMode" class="btn btn-sm btn-secondary ms-2">
-                        Toggle
+
+            <div class="modal-body px-4 py-3">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <strong class="text-warning">Dev Mode:</strong>
+                        <span id="devModeStatus" class="ms-2 fw-bold">…</span>
+                    </div>
+                    <button id="toggleDevMode" class="btn btn-outline-light btn-sm">
+                        <i class="fas fa-toggle-on me-1"></i> Toggle
                     </button>
-                </p>
-                <p>
-                    <button id="clearTodayData" class="btn btn-sm btn-danger">
-                        Clear Today’s Data
+                </div>
+
+                <div class="mb-3">
+                    <button id="clearTodayData" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-trash-alt me-2"></i> Clear Today’s Data
                     </button>
-                </p>
-                <div id="devToolsMessage" class="mt-2"></div>
+                </div>
+
+                <div id="devToolsMessage" class="alert alert-info mt-3 d-none"></div>
             </div>
         </div>
     </div>

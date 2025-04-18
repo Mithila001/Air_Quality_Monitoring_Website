@@ -16,11 +16,12 @@ builder.Services.AddDbContext<AirQualityDbContext>(options =>
 
 // Dependency Injection: Register repositories.
 builder.Services.AddScoped<ISensorRepository, SensorRepository>();
-// Repeat for other repositories (MonitoringAdmin, SimulationConfiguration, AlertThresholdSetting)
 
 // Load DevModeOptions from appsettings.json
-builder.Services.Configure<DevModeOptions>(
-    builder.Configuration.GetSection("DevModeOptions"));
+var initialDevMode = builder.Configuration.GetSection("DevModeOptions").Get<DevModeOptions>()?.Enabled ?? false;
+// Register runtime dev-mode state
+builder.Services.AddSingleton(new DevModeState { Enabled = initialDevMode });
+
 // Register the hosted background simulation service
 builder.Services.AddHostedService<SensorDataSimulationService>();
 

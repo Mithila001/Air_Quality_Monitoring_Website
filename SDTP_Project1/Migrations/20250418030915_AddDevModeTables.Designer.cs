@@ -12,8 +12,8 @@ using SDTP_Project1.Data;
 namespace SDTP_Project1.Migrations
 {
     [DbContext(typeof(AirQualityDbContext))]
-    [Migration("20250331175524_FixAlertThresholdSettingPK")]
-    partial class FixAlertThresholdSettingPK
+    [Migration("20250418030915_AddDevModeTables")]
+    partial class AddDevModeTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -199,12 +199,17 @@ namespace SDTP_Project1.Migrations
             modelBuilder.Entity("SDTP_Project1.Models.AirQualityData", b =>
                 {
                     b.HasOne("SDTP_Project1.Models.Sensor", "Sensor")
-                        .WithMany()
+                        .WithMany("AirQualityReadings")
                         .HasForeignKey("SensorID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Sensor");
+                });
+
+            modelBuilder.Entity("SDTP_Project1.Models.Sensor", b =>
+                {
+                    b.Navigation("AirQualityReadings");
                 });
 #pragma warning restore 612, 618
         }

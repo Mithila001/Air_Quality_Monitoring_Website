@@ -28,16 +28,23 @@ namespace SDTP_Project1.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+                var cfg = _settings.CurrentValue;
+                var period = cfg.Enabled
+                   ? TimeSpan.FromSeconds(cfg.FastIntervalSeconds)
+                   : cfg.ProductionInterval;
+
+                using var timer = new PeriodicTimer(period);
+
                 await SimulateAndStoreReadingsAsync(stoppingToken);
 
-                // choose interval based on DevMode flag
-                var cfg = _settings.CurrentValue;
-                var wait = cfg.Enabled
-                    ? TimeSpan.FromSeconds(cfg.FastIntervalSeconds)
-                    : cfg.ProductionInterval;
-
+                if (!await timer.WaitForNextTickAsync(stoppingToken))
+                    break;
             }
         }
+
+        // Convert to 2 decimal places
+        private static double Round2(double val) => Math.Round(val, 2);
+
 
         private async Task SimulateAndStoreReadingsAsync(CancellationToken token)
         {
@@ -60,21 +67,22 @@ namespace SDTP_Project1.Services
                 double co = Random.Shared.NextDouble() * 10;    // 0–10 ppm
 
                 // 2) Simple AQI placeholder (e.g. max of normalized sub-indices)
-                int aqi = (int)new[] { pm25 / 150, pm10 / 200, o3 / 180, no2 / 200, so2 / 75, co / 10 }
-                          .Max() * 500;  // scale to 0–500
+                int aqi = (int)(new[] { pm25 / 150, pm10 / 200, o3 / 180, no2 / 200, so2 / 75, co / 10 }.Max() * 500);
+                // scale to 0–500
 
                 var entry = new AirQualityData
                 {
                     SensorID = sensor.SensorID,
                     Timestamp = now,
-                    PM2_5 = pm25,
-                    PM10 = pm10,
-                    O3 = o3,
-                    NO2 = no2,
-                    SO2 = so2,
-                    CO = co,
+                    PM2_5 = Round2(pm25),
+                    PM10 = Round2(pm10),
+                    O3 = Round2(o3),
+                    NO2 = Round2(no2),
+                    SO2 = Round2(so2),
+                    CO = Round2(co),
                     AQI = aqi
                 };
+
 
                 db.AirQualityData.Add(entry);
             }

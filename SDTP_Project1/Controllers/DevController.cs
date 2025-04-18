@@ -12,25 +12,26 @@ namespace SDTP_Project1.Controllers
     [Route("dev")]
     public class DevController : Controller
     {
+        private readonly DevModeState _state;
         private readonly AirQualityDbContext _db;
-        private readonly IOptionsMonitor<DevModeOptions> _settings; // ← updated
 
-        public DevController(
-            AirQualityDbContext db,
-            IOptionsMonitor<DevModeOptions> settings)         // ← updated
+        public DevController(AirQualityDbContext db, DevModeState state)
         {
             _db = db;
-            _settings = settings;
+            _state = state;
         }
 
         [HttpPost("toggle")]
         public IActionResult ToggleDevMode()
         {
-            // Flip the in‑memory flag
-            var cfg = _settings.CurrentValue;
-            cfg.Enabled = !cfg.Enabled;
+            _state.Enabled = !_state.Enabled;
+            return Json(new { devMode = _state.Enabled });
+        }
 
-            return Json(new { devMode = cfg.Enabled });
+        [HttpGet("status")]
+        public IActionResult GetStatus()
+        {
+            return Json(new { devMode = _state.Enabled });
         }
 
         [HttpPost("clear-today")]

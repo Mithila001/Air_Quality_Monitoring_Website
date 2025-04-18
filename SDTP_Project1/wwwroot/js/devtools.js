@@ -1,23 +1,43 @@
 ﻿$(function () {
-    // show modal
-    $('#devToolsBtn').click(() => $('#devToolsModal').modal('show'));
+    const fetchStatus = () => {
+        $.get('/dev/status', data => {
+            $('#devModeStatus').text(data.devMode ? 'ON' : 'OFF');
+        });
+    };
 
-    // load status
-    function refreshStatus() {
-        // could call an endpoint; here we assume server returns status on toggle
-    }
+    // Trigger modal on button click
+    $('#devToolsBtn').click(function () {
+        $('#devToolsModal').modal('show');  // This will show the modal when the button is clicked
+    });
+
+    $('#devToolsModal').on('show.bs.modal', fetchStatus);
 
     $('#toggleDevMode').click(() => {
         $.post('/dev/toggle', null, data => {
             $('#devModeStatus').text(data.devMode ? 'ON' : 'OFF');
-            $('#devToolsMessage').text(`DevMode is now ${data.devMode}`);
+            $('#devToolsMessage')
+                .removeClass('d-none')
+                .text(`DevMode is now ${data.devMode ? 'ENABLED' : 'DISABLED'}`)
+                .addClass('alert-info')
+                .removeClass('alert-danger');
         });
     });
 
     $('#clearTodayData').click(() => {
         if (!confirm('Really delete all today’s data?')) return;
         $.post('/dev/clear-today', null, data => {
-            $('#devToolsMessage').text(`Deleted ${data.deleted} records.`);
+            $('#devToolsMessage')
+                .removeClass('d-none')
+                .text(`Deleted ${data.deleted} records.`)
+                .addClass('alert-danger')
+                .removeClass('alert-info');
+        });
+    });
+
+    // Fetch status when modal is shown
+    $('#devToolsModal').on('show.bs.modal', function () {
+        $.get('/dev/status', function (data) {
+            $('#devModeStatus').text(data.devMode ? 'ON' : 'OFF');
         });
     });
 });

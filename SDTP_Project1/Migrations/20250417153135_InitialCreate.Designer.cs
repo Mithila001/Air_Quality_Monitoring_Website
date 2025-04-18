@@ -12,8 +12,8 @@ using SDTP_Project1.Data;
 namespace SDTP_Project1.Migrations
 {
     [DbContext(typeof(AirQualityDbContext))]
-    [Migration("20250417150217_MigrationAfterRmovedCorruptedMigration")]
-    partial class MigrationAfterRmovedCorruptedMigration
+    [Migration("20250417153135_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
