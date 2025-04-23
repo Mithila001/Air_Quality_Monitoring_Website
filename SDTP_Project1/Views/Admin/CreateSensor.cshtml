@@ -9,6 +9,8 @@
             <div class="card p-4">
                 <h2 class="mb-4">Add New Sensor</h2>
                 <form asp-action="CreateSensor" method="post">
+                    @Html.AntiForgeryToken()   <!-- ★ CSRF token added -->
+
                     <div class="mb-3">
                         <label asp-for="City" class="form-label"></label>
                         <input asp-for="City" class="form-control" />
@@ -29,9 +31,7 @@
                         <textarea asp-for="Description" class="form-control"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">
-                        Add Sensor
-                    </button>
+                    <button type="submit" class="btn btn-primary w-100">Add Sensor</button>
                 </form>
             </div>
         </div>

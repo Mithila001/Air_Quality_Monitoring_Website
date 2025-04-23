@@ -1,97 +1,101 @@
-﻿function disableSensor(sensorId) {
-    $.ajax({
-        url: '/Admin/ToggleSensorStatus',
-        type: 'POST',
-        data: { id: sensorId },
-        success: function (response) {
-            if (response.success) {
-                // Find the button and update the text based on response
-                let btn = $(`button[onclick="disableSensor('${sensorId}')"]`);
-                btn.text(response.isActive ? "Disable" : "Enable");
-
-                // Update the row UI to reflect the new status
-                let row = btn.closest(".sensor-row");
-                row.toggleClass("disabled", !response.isActive);
-            } else {
-                alert("Error updating sensor status.");
-            }
-        },
-        error: function () {
-            alert("Error toggling sensor status.");
-        }
-    });
+﻿function getAntiForgeryToken() {
+    return $('input[name="__RequestVerificationToken"]').val();
 }
 
+$(function () {
+    // Toggle On/Off
+    $(document).on("click", ".sensor-toggle", function () {
+        const btn = $(this),
+            id = btn.data("id"),
+            newStatus = !btn.data("isactive");
 
-function confirmDelete(sensorId) {
-    if (!confirm("⚠️ Are you sure you want to delete this sensor permanently?")) return;
-
-    $.ajax({
-        url: '/Admin/DeleteSensor',
-        type: 'POST',
-        data: { id: sensorId },
-        success: function (response) {
-            alert(response.message);
-            location.reload();
-        },
-        error: function () {
-            alert("Error deleting sensor.");
-        }
+        $.ajax({
+            url: "/Admin/ToggleSensorStatus",
+            type: "POST",
+            data: { id, isActive: newStatus },
+            headers: { "RequestVerificationToken": getAntiForgeryToken() },
+            success(resp) {
+                if (!resp.success) return alert(resp.message || "Error");
+                btn
+                    .data("isactive", newStatus)
+                    .text(newStatus ? "Disable" : "Enable");
+                const badge = $("#status-" + id);
+                badge
+                    .toggleClass("bg-success", newStatus)
+                    .toggleClass("bg-danger", !newStatus)
+                    .text(newStatus ? "Active" : "Inactive");
+                let cnt = parseInt($("#deactivatedCount").text());
+                $("#deactivatedCount").text(newStatus ? Math.max(0, cnt - 1) : cnt + 1);
+            },
+            error() { alert("Failed to toggle sensor."); }
+        });
     });
-}
 
+    // Delete
+    $(document).on("click", ".sensor-delete", function () {
+        const id = $(this).data("id");
+        if (!confirm("⚠️ Permanently delete this sensor?")) return;
+        $.ajax({
+            url: "/Admin/DeleteSensor",
+            type: "POST",
+            data: { id },
+            headers: { "RequestVerificationToken": getAntiForgeryToken() },
+            success(resp) {
+                if (!resp.success) return alert(resp.message);
+                location.reload();
+            },
+            error() { alert("Failed to delete sensor."); }
+        });
+    });
 
-// Use delegated event handling for buttons with the sensor-toggle class
-$(document).on("click", ".sensor-toggle", function () {
-    var btn = $(this);
-    var sensorId = btn.data("id");
-    // Convert data-isactive to a boolean if needed
-    var currentStatus = (btn.data("isactive") === true || btn.data("isactive") === "True");
-    // Toggle the status: if true, set to false; if false, set to true.
-    var newStatus = !currentStatus;
-
-    // Send the AJAX request to toggle sensor status
-    $.ajax({
-        url: '/Admin/ToggleSensorStatus',
-        type: 'POST',
-        data: { id: sensorId, isActive: newStatus },
-        success: function (response) {
-            if (response.success) {
-                // Update the button's data attribute and text
-                btn.data("isactive", newStatus);
-                btn.text(newStatus ? "Disable" : "Enable");
-                // Update the status badge
-                var statusBadge = $("#status-" + sensorId);
-                if (newStatus) {
-                    // Sensor is active, so status badge becomes "Active" with bg-success
-                    statusBadge
-                        .removeClass("bg-danger")
-                        .addClass("bg-success")
-                        .text("Active");
+    // Edit Sensor Form
+    $(document).on("submit", "#editSensorForm", function (e) {
+        e.preventDefault();
+        const form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: "POST",
+            data: form.serialize(),
+            headers: { "RequestVerificationToken": getAntiForgeryToken() },
+            success(resp) {
+                if (resp.success) {
+                    $("#editSensorModal").modal("hide");
+                    location.reload();
                 } else {
-                    // Sensor is inactive
-                    statusBadge
-                        .removeClass("bg-success")
-                        .addClass("bg-danger")
-                        .text("Inactive");
+                    $("#editSensorContent").html(resp);
                 }
+            },
+            error() { alert("Failed to update sensor."); }
+        });
+    });
 
-                var countEl = $("#deactivatedCount");
-                var currentCount = parseInt(countEl.text());
-                if (newStatus) {
-                    // When enabling, decrease the count
-                    countEl.text(Math.max(0, currentCount - 1));
+    // Alert Thresholds Form
+    $(document).on("submit", "#alertThresholdSettingsForm", function (e) {
+        e.preventDefault();
+        const form = $(this), payload = [];
+        form.find(".threshold-setting").each(function () {
+            const block = $(this),
+                parameter = block.data("parameter"),
+                value = parseFloat(block.find(".threshold-value").val()),
+                isActive = block.find(".threshold-active").prop("checked");
+            payload.push({ Parameter: parameter, ThresholdValue: value, IsActive: isActive });
+        });
+
+        $.ajax({
+            url: form.attr("action"),
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+            headers: { "RequestVerificationToken": getAntiForgeryToken() },
+            success(resp) {
+                if (resp.success) {
+                    $("#alertThresholdSettingsModal").modal("hide");
+                    location.reload();
                 } else {
-                    // When disabling, increase the count
-                    countEl.text(currentCount + 1);
+                    alert(resp.message || "Error saving settings.");
                 }
-
-            } else {
-                alert("Error updating sensor status: " + response.message);
-            }
-        },
-        error: function () {
-            alert("Error toggling sensor status.");
-        }
+            },
+            error() { alert("Failed to save thresholds."); }
+        });
     });
 });

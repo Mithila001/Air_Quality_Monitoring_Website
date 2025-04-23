@@ -3,6 +3,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<form id="antiforgeryForm" style="display:none">
+    @Html.AntiForgeryToken()
+</form>
+
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="p-4 bg-[#d1fae5] text-green-800 rounded-md">
@@ -84,8 +88,11 @@
                                     @(sensor.IsActive ? "Disable" : "Enable")
                                 </button>
 
+                                <button class="btn btn-danger btn-sm sensor-delete"
+                                        data-id="@sensor.SensorID">
+                                    Delete
+                                </button>
 
-                                <button class="btn btn-danger btn-sm" onclick="confirmDelete('@sensor.SensorID')">Delete</button>
                             </div>
 
 
@@ -119,6 +126,13 @@
         </div>
     </div>
 </div>
+
+
+<form id="antiforgeryForm" style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
+
+
 
 @section Scripts {
     <script>

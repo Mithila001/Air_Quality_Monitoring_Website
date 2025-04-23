@@ -1,30 +1,35 @@
 ﻿@model SDTP_Project1.Models.Sensor
 
-<form asp-action="EditSensor" asp-controller="Admin" method="post" class="space-y-4">
+<form id="editSensorForm"
+      asp-action="EditSensor"
+      asp-controller="Admin"
+      method="post"
+      class="space-y-4">
+    @Html.AntiForgeryToken()   <!-- ★ CSRF token added -->
 
     <input type="hidden" asp-for="SensorID" />
 
     <div class="mb-3">
         <label asp-for="City" class="form-label">City</label>
-        <input asp-for="City" class="form-control" value="@Model.City" />
+        <input asp-for="City" class="form-control" />
         <span asp-validation-for="City" class="text-danger form-text"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Latitude" class="form-label">Latitude</label>
-        <input asp-for="Latitude" class="form-control" value="@Model.Latitude" />
+        <input asp-for="Latitude" class="form-control" />
         <span asp-validation-for="Latitude" class="text-danger form-text"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Longitude" class="form-label">Longitude</label>
-        <input asp-for="Longitude" class="form-control" value="@Model.Longitude" />
+        <input asp-for="Longitude" class="form-control" />
         <span asp-validation-for="Longitude" class="text-danger form-text"></span>
     </div>
 
     <div class="mb-3">
         <label asp-for="Description" class="form-label">Description</label>
-        <textarea asp-for="Description" class="form-control">@Model.Description</textarea>
+        <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger form-text"></span>
     </div>
 

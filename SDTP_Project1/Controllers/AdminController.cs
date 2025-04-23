@@ -6,204 +6,172 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-
-namespace SDTP_Project1.Controllers;
-public class AdminController : Controller
+namespace SDTP_Project1.Controllers
 {
-    private readonly ISensorRepository _sensorRepository;
-    private readonly IAlertThresholdSettingRepository _alertThresholdSettingRepository;
-
-    public AdminController(ISensorRepository sensorRepository, IAlertThresholdSettingRepository alertThresholdSettingRepository)
+    public class AdminController : Controller
     {
-        _sensorRepository = sensorRepository;
-        _alertThresholdSettingRepository = alertThresholdSettingRepository;
-    }
+        private readonly ISensorRepository _sensorRepository;
+        private readonly IAlertThresholdSettingRepository _alertRepo;
 
-    // Dashboard view (System Dashboard)
-    public async Task<IActionResult> Index()
-    {
-        var sensors = await _sensorRepository.GetAllSensorsAsync();
-        // You can also aggregate statistics for the dashboard
-        return View(sensors);
-    }
-
-    // Sensor management actions
-    [HttpGet]
-    public IActionResult CreateSensor()
-    {
-        return View();
-    }
-
-    // Create a Sensor
-    [HttpPost]
-    public async Task<IActionResult> CreateSensor(Sensor sensor)
-    {
-        // Generate SensorID before validation
-        if (!string.IsNullOrWhiteSpace(sensor.City))
+        public AdminController(
+            ISensorRepository sensorRepository,
+            IAlertThresholdSettingRepository alertThresholdSettingRepository)
         {
-            sensor.SensorID = $"S_{sensor.City.Trim()}_{DateTime.Now:yyyyMMddHHmm}";
-        }
-        else
-        {
-            ModelState.AddModelError("City", "City is required.");
-            return View(sensor);
+            _sensorRepository = sensorRepository;
+            _alertRepo = alertThresholdSettingRepository;
         }
 
-        // Remove ModelState error for SensorID because we are generating it manually
-        ModelState.Remove("SensorID");
-
-        // Ensure RegistrationDate is properly set
-        sensor.RegistrationDate = DateTime.Now;
-
-        // Check ModelState validity after adjustments
-        if (ModelState.IsValid)
+        // Dashboard
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            await _sensorRepository.AddSensorAsync(sensor);
-            TempData["SuccessMessage"] = "Sensor added successfully!";
-            return RedirectToAction("Index");
+            var sensors = await _sensorRepository.GetAllSensorsAsync();
+            return View(sensors);
         }
 
-        return View(sensor);
-    }
-
-
-    // Edit sensor
-    [HttpGet]
-    public async Task<IActionResult> EditSensor(string id)
-    {
-        var sensor = await _sensorRepository.GetSensorByIdAsync(id);
-        if (sensor == null)
+        //–– CreateSensor ––
+        [HttpGet]
+        public IActionResult CreateSensor()
         {
-            return NotFound();
-        }
-        return PartialView("_EditSensorPartial", sensor);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> EditSensor(Sensor sensor)
-    {
-        if (!ModelState.IsValid)
-        {
-            return PartialView("_EditSensorPartial", sensor); // If validation fails, show errors in the modal
+            return View();
         }
 
-        var existingSensor = await _sensorRepository.GetSensorByIdAsync(sensor.SensorID);
-        if (existingSensor == null)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSensor(Sensor sensor)
         {
-            return NotFound();
-        }
-
-        // Update sensor properties
-        existingSensor.City = sensor.City;
-        existingSensor.Latitude = sensor.Latitude;
-        existingSensor.Longitude = sensor.Longitude;
-        existingSensor.Description = sensor.Description;
-
-        await _sensorRepository.UpdateSensorAsync(existingSensor);
-
-        // Return JSON to indicate success
-        return Json(new { success = true, message = "Sensor updated successfully!" });
-    }
-
-    // Deactivate sensor
-    //[HttpPost]
-    //public async Task<IActionResult> DeactivateSensor(string id)
-    //{
-    //    await _sensorRepository.DeactivateSensorAsync(id);
-    //    return RedirectToAction("Index");
-    //}
-
-    // Update Sensor Status (Enable/Disable)
-
-    //[HttpPost]
-    //public async Task<IActionResult> DisableSensor(string id)
-    //{
-    //    var sensor = await _sensorRepository.GetSensorByIdAsync(id);
-    //    if (sensor == null)
-    //    {
-    //        return NotFound();
-    //    }
-
-    //    sensor.IsActive = false;
-    //    await _sensorRepository.UpdateSensorAsync(sensor);
-
-    //    return Json(new { success = true, message = "Sensor disabled successfully!" });
-    //}
-
-    [HttpPost]
-    public async Task<IActionResult> ToggleSensorStatus(string id, bool isActive)
-    {
-        var sensor = await _sensorRepository.GetSensorByIdAsync(id);
-        if (sensor == null)
-        {
-            return Json(new { success = false, message = "Sensor not found." });
-        }
-
-        sensor.IsActive = isActive;
-        await _sensorRepository.UpdateSensorAsync(sensor);
-
-        return Json(new { success = true });
-    }
-
-
-
-    // Delete sensor
-
-    [HttpPost]
-    public async Task<IActionResult> DeleteSensor(string id)
-    {
-        var sensor = await _sensorRepository.GetSensorByIdAsync(id);
-        if (sensor == null)
-        {
-            return NotFound();
-        }
-
-        await _sensorRepository.DeleteSensorAsync(id);
-        return Json(new { success = true, message = "Sensor deleted successfully!" });
-    }
-
-    public async Task<IActionResult> AlertThresholdSettings()
-    {
-        var settings = await _alertThresholdSettingRepository.GetAllAsync();
-        return PartialView("_AlertThresholdSettingsPartial", settings);
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> UpdateAlertThresholds([FromBody] List<AlertThresholdSetting> updatedSettings)
-    {
-        if (updatedSettings == null || !updatedSettings.Any())
-        {
-            return Json(new { success = false, message = "No settings to update." });
-        }
-
-        try
-        {
-            foreach (var updatedSetting in updatedSettings)
+            // 1. City must be provided
+            if (string.IsNullOrWhiteSpace(sensor.City))
             {
-                var existingSetting = await _alertThresholdSettingRepository.GetByParameterAsync(updatedSetting.Parameter);
-                if (existingSetting != null)
-                {
-                    existingSetting.ThresholdValue = updatedSetting.ThresholdValue;
-                    existingSetting.IsActive = updatedSetting.IsActive;
-                    existingSetting.LastUpdated = DateTime.Now;
-                    await _alertThresholdSettingRepository.UpdateAsync(existingSetting);
-                }
-                else
-                {
-                    // Handle case where a setting for the parameter doesn't exist
-                    // You might want to create a new one in this case, depending on your requirements.
-                    // For now, we'll just log a warning.
-                    Console.WriteLine($"Warning: No existing setting found for parameter '{updatedSetting.Parameter}'.");
-                }
+                ModelState.AddModelError(nameof(sensor.City), "City is required.");
+                return View(sensor);
             }
 
+            // 2. Generate SensorID and clear its ModelState error
+            sensor.SensorID = $"S_{sensor.City.Trim()}_{DateTime.Now:yyyyMMddHHmm}";
+            ModelState.Remove(nameof(sensor.SensorID));
+
+            // 3. Set the registration date
+            sensor.RegistrationDate = DateTime.Now;
+
+            // 4. Initialize the navigation property so the binder/validator sees a valid (empty) collection
+            sensor.AirQualityReadings = new List<AirQualityData>();
+            //   —and remove any leftover ModelState entry for it
+            ModelState.Remove(nameof(sensor.AirQualityReadings));
+
+            // 5. Now check full validity
+            if (!ModelState.IsValid)
+                return View(sensor);
+
+            // 6. Persist and redirect
+            await _sensorRepository.AddSensorAsync(sensor);
+            TempData["SuccessMessage"] = "Sensor added successfully!";
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        //–– EditSensor ––
+        [HttpGet]
+        public async Task<IActionResult> EditSensor(string id)
+        {
+            var sensor = await _sensorRepository.GetSensorByIdAsync(id);
+            if (sensor == null) return NotFound();
+            return PartialView("_EditSensorPartial", sensor);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSensor(Sensor sensor)
+        {
+            // ── 1. Neutralize the phantom navigation‐property error ──
+            //    The form never binds AirQualityReadings, so clear it out:
+            sensor.AirQualityReadings = new List<AirQualityData>();
+            ModelState.Remove(nameof(sensor.AirQualityReadings));
+
+            // ── 2. Re-check ModelState now that only your posted fields remain ──
+            if (!ModelState.IsValid)
+            {
+                // Return the partial view (with validation messages) back into the modal
+                return PartialView("_EditSensorPartial", sensor);
+            }
+
+            // ── 3. Fetch existing, apply updates, save ──
+            var existing = await _sensorRepository.GetSensorByIdAsync(sensor.SensorID);
+            if (existing == null)
+                return NotFound();
+
+            existing.City = sensor.City;
+            existing.Latitude = sensor.Latitude;
+            existing.Longitude = sensor.Longitude;
+            existing.Description = sensor.Description;
+
+            await _sensorRepository.UpdateSensorAsync(existing);
+
+            // ── 4. Signal success back to your AJAX handler ──
             return Json(new { success = true });
         }
-        catch (Exception ex)
+
+
+        //–– ToggleSensorStatus ––
+        [HttpPost]
+        [ValidateAntiForgeryToken]   // ← must have this
+        public async Task<IActionResult> ToggleSensorStatus(string id, bool isActive)
         {
-            return Json(new { success = false, message = $"Error updating thresholds: {ex.Message}" });
+            var sensor = await _sensorRepository.GetSensorByIdAsync(id);
+            if (sensor == null)
+                return Json(new { success = false, message = "Sensor not found." });
+
+            sensor.IsActive = isActive;
+            await _sensorRepository.UpdateSensorAsync(sensor);
+            return Json(new { success = true });
+        }
+
+        //–– DeleteSensor ––
+        [HttpPost]
+        [ValidateAntiForgeryToken]   // ← must have this
+        public async Task<IActionResult> DeleteSensor(string id)
+        {
+            var sensor = await _sensorRepository.GetSensorByIdAsync(id);
+            if (sensor == null) return Json(new { success = false, message = "Sensor not found." });
+
+            await _sensorRepository.DeleteSensorAsync(id);
+            return Json(new { success = true, message = "Sensor deleted successfully!" });
+        }
+
+        //–– Alert Threshold Settings ––
+        [HttpGet]
+        public async Task<IActionResult> AlertThresholdSettings()
+        {
+            var settings = await _alertRepo.GetAllAsync();
+            return PartialView("_AlertThresholdSettingsPartial", settings);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]   // ← must have this
+        public async Task<IActionResult> UpdateAlertThresholds([FromBody] List<AlertThresholdSetting> updatedSettings)
+        {
+            if (updatedSettings == null || !updatedSettings.Any())
+                return Json(new { success = false, message = "No settings to update." });
+
+            try
+            {
+                foreach (var s in updatedSettings)
+                {
+                    var exist = await _alertRepo.GetByParameterAsync(s.Parameter);
+                    if (exist != null)
+                    {
+                        exist.ThresholdValue = s.ThresholdValue;
+                        exist.IsActive = s.IsActive;
+                        exist.LastUpdated = DateTime.Now;
+                        await _alertRepo.UpdateAsync(exist);
+                    }
+                }
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
-
-
 }

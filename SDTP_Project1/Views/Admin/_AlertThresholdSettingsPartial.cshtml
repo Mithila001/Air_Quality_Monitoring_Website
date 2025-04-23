@@ -2,95 +2,50 @@
 
 <div class="modal-header">
     <h5 class="modal-title">Alert Threshold Settings</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
 </div>
 <div class="modal-body">
-    <form id="alertThresholdSettingsForm">
+    <form id="alertThresholdSettingsForm"
+          asp-action="UpdateAlertThresholds"
+          asp-controller="Admin"
+          method="post">
+        @Html.AntiForgeryToken()   <!-- ★ CSRF token added -->
         @if (Model != null && Model.Any())
         {
             @foreach (var setting in Model)
             {
-                <div class="mb-3">
-                    <label asp-for="@setting.ThresholdValue" class="form-label">Threshold Value for @setting.Parameter</label>
-                    <input type="number" class="form-control" asp-for="@setting.ThresholdValue" data-parameter="@setting.Parameter" />
+                <div class="mb-3 threshold-setting" data-parameter="@setting.Parameter">
+                    <label class="form-label">
+                        Threshold Value for @setting.Parameter
+                    </label>
+                    <input type="number"
+                           class="form-control threshold-value"
+                           asp-for="@setting.ThresholdValue" />
+                    <span asp-validation-for="@setting.ThresholdValue"
+                          class="text-danger"></span>
+
+                    <div class="form-check mt-2">
+                        <input type="checkbox"
+                               class="form-check-input threshold-active"
+                               asp-for="@setting.IsActive" />
+                        <label class="form-check-label">
+                            Enable Alerts for @setting.Parameter
+                        </label>
+                    </div>
                 </div>
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" asp-for="@setting.IsActive" data-parameter="@setting.Parameter" />
-                    <label class="form-check-label" asp-for="@setting.IsActive">Enable Alerts for @setting.Parameter</label>
-                </div>
-                <hr class="my-4" />
             }
         }
         else
         {
             <p>No alert threshold settings found.</p>
         }
+
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-secondary"
+            data-bs-dismiss="modal">
+        Close
+    </button>
 </div>
-
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            $("#alertThresholdSettingsForm").submit(function (e) {
-                e.preventDefault(); // Prevent default form submission
-
-                var updatedSettings = [];
-                $("#alertThresholdSettingsForm").find('.form-control, .form-check-input').each(function () {
-                    var parameter = $(this).data('parameter');
-                    var value;
-                    var isActive;
-
-                    if ($(this).attr('type') === 'checkbox') {
-                        isActive = $(this).prop('checked');
-                        var relatedInput = $(this).closest('.mb-3').prev('.mb-3').find('input[data-parameter="' + parameter + '"]');
-                        value = relatedInput.val();
-                    } else if ($(this).attr('type') === 'number') {
-                        value = $(this).val();
-                        isActive = $(this).closest('.mb-3').next('.mb-3').find('input[data-parameter="' + parameter + '"]').prop('checked');
-                    }
-
-                    if (parameter) {
-                        updatedSettings.push({
-                            Parameter: parameter,
-                            ThresholdValue: parseFloat(value),
-                            IsActive: isActive
-                        });
-                    }
-                });
-
-                $.ajax({
-                    url: '@Url.Action("UpdateAlertThresholds", "Admin")',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(updatedSettings),
-                    success: function (response) {
-                        if (response.success) {
-                            $("#alertThresholdSettingsModal").modal('hide');
-                            location.reload(); // Reload to reflect changes
-                        } else {
-                            // Handle error display if needed
-                            console.error("Error updating thresholds:", response.message);
-                            // Optionally display an error message in the modal
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("AJAX error:", error);
-                        // Optionally display an error message in the modal
-                    }
-                });
-            });
-        });
-
-
-                $("#alertThresholdSettingsForm").submit(function (e) {
-            e.preventDefault(); // Prevent default form submission
-            alert("Form submit intercepted!"); // Add this line
-
-            // ... rest of your AJAX code ...
-        });
-    </script>
-}
