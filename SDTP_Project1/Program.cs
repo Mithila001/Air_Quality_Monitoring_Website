@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AirQualityDbContext>(options =>
 
 // Dependency Injection: Register repositories.
 builder.Services.AddScoped<ISensorRepository, SensorRepository>();
+builder.Services.AddScoped<IAlertThresholdSettingRepository, AlertThresholdSettingRepository>();
 
 // Load DevModeOptions from appsettings.json
 var initialDevMode = builder.Configuration.GetSection("DevModeOptions").Get<DevModeOptions>()?.Enabled ?? false;

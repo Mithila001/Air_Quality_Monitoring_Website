@@ -2,17 +2,21 @@
 using SDTP_Project1.Repositories;
 using SDTP_Project1.Models;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 
 namespace SDTP_Project1.Controllers;
 public class AdminController : Controller
 {
     private readonly ISensorRepository _sensorRepository;
-    // Inject additional repositories as needed, e.g., for SimulationConfiguration, AlertThresholdSetting, etc.
+    private readonly IAlertThresholdSettingRepository _alertThresholdSettingRepository;
 
-    public AdminController(ISensorRepository sensorRepository)
+    public AdminController(ISensorRepository sensorRepository, IAlertThresholdSettingRepository alertThresholdSettingRepository)
     {
         _sensorRepository = sensorRepository;
+        _alertThresholdSettingRepository = alertThresholdSettingRepository;
     }
 
     // Dashboard view (System Dashboard)
@@ -158,5 +162,48 @@ public class AdminController : Controller
         return Json(new { success = true, message = "Sensor deleted successfully!" });
     }
 
-    // Similarly, add actions for Simulation Configuration, Alert Threshold Settings, and User Account Management.
+    public async Task<IActionResult> AlertThresholdSettings()
+    {
+        var settings = await _alertThresholdSettingRepository.GetAllAsync();
+        return PartialView("_AlertThresholdSettingsPartial", settings);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateAlertThresholds([FromBody] List<AlertThresholdSetting> updatedSettings)
+    {
+        if (updatedSettings == null || !updatedSettings.Any())
+        {
+            return Json(new { success = false, message = "No settings to update." });
+        }
+
+        try
+        {
+            foreach (var updatedSetting in updatedSettings)
+            {
+                var existingSetting = await _alertThresholdSettingRepository.GetByParameterAsync(updatedSetting.Parameter);
+                if (existingSetting != null)
+                {
+                    existingSetting.ThresholdValue = updatedSetting.ThresholdValue;
+                    existingSetting.IsActive = updatedSetting.IsActive;
+                    existingSetting.LastUpdated = DateTime.Now;
+                    await _alertThresholdSettingRepository.UpdateAsync(existingSetting);
+                }
+                else
+                {
+                    // Handle case where a setting for the parameter doesn't exist
+                    // You might want to create a new one in this case, depending on your requirements.
+                    // For now, we'll just log a warning.
+                    Console.WriteLine($"Warning: No existing setting found for parameter '{updatedSetting.Parameter}'.");
+                }
+            }
+
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+            return Json(new { success = false, message = $"Error updating thresholds: {ex.Message}" });
+        }
+    }
+
+
 }

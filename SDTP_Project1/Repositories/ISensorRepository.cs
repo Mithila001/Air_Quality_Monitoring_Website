@@ -12,4 +12,5 @@ public interface ISensorRepository
     Task UpdateSensorAsync(Sensor sensor);
     Task DeactivateSensorAsync(string sensorId);
     Task DeleteSensorAsync(string sensorId);
+
 }

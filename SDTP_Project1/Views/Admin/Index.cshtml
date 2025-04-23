@@ -43,7 +43,8 @@
     </div>
 
     <div class="text-end  mt-4">
-        <a class="btn btn-primary" href="@Url.Action("CreateSensor", "Admin")">Add New Sensor</a>
+        <a class="btn btn-primary me-2" href="@Url.Action("CreateSensor", "Admin")">Add New Sensor</a>
+        <button class="btn btn-info" id="openThresholdSettings">Alert Threshold Settings</button>
     </div>
 
     <div class="mt-4 overflow-auto" style="max-height: 60vh;">
@@ -109,6 +110,16 @@
     </div>
 </div>
 
+@* container for the alertThresholdSettingsModal window *@
+<div id="alertThresholdSettingsModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id="alertThresholdSettingsContent">
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         $(document).ready(function(){
@@ -153,6 +164,15 @@
                         console.error("Error updating sensor:", xhr.responseText);
                     }
                 });
+            });
+        });
+
+        $("#openThresholdSettings").click(function(){
+            $.get('@Url.Action("AlertThresholdSettings", "Admin")', function(data){
+                $("#alertThresholdSettingsContent").html(data);
+                $("#alertThresholdSettingsModal").modal('show');
+            }).fail(function(xhr){
+                console.error("Error loading alert threshold settings:", xhr.responseText);
             });
         });
     </script>

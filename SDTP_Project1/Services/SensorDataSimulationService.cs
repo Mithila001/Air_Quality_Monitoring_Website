@@ -14,24 +14,27 @@ namespace SDTP_Project1.Services
     public class SensorDataSimulationService : BackgroundService
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IOptionsMonitor<DevModeOptions> _settings;
+        private readonly DevModeState _devModeState; // Inject DevModeState
+        private readonly IOptionsMonitor<DevModeOptions> _devModeOptions; // Inject DevModeOptions
 
         public SensorDataSimulationService(
             IServiceScopeFactory scopeFactory,
-            IOptionsMonitor<DevModeOptions> settings)
+            DevModeState devModeState, // Receive injected DevModeState
+            IOptionsMonitor<DevModeOptions> devModeOptions)
+
         {
             _scopeFactory = scopeFactory;
-            _settings = settings;
+            _devModeState = devModeState;
+            _devModeOptions = devModeOptions;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var cfg = _settings.CurrentValue;
-                var period = cfg.Enabled
-                   ? TimeSpan.FromSeconds(cfg.FastIntervalSeconds)
-                   : cfg.ProductionInterval;
+                var period = _devModeState.Enabled // Use the in-memory state
+                    ? TimeSpan.FromSeconds(_devModeOptions.CurrentValue.FastIntervalSeconds)
+                    : _devModeOptions.CurrentValue.ProductionInterval;
 
                 using var timer = new PeriodicTimer(period);
 
