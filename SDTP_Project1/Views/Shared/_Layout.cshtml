@@ -75,6 +75,14 @@
                                 Admin
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-flex align-items-center @(ViewContext.RouteData.Values["Controller"].ToString() == "SystemAdmin" ? "active bg-secondary rounded" : "")" href="@Url.Action("Index", "SystemAdmin")">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354l-2 2m0 0l-2-2m2 2l2 2m-2-2l-2-2m2 2l2 2m-2-2l-2-2M12 15.646l-2-2m0 0l-2 2m2-2l2-2m-2 2l2 2m-2-2l2-2m-2-2v-2a2 2 0 012-2h6a2 2 0 012 2v2h.01l.01-.01c1.032.072 2.03.695 2.953 1.727A12 12 0 0012 15.646z" />
+                                </svg>
+                                System Admin
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 @await Html.PartialAsync("_DevToolsPartial")

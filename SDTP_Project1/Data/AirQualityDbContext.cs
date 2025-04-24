@@ -14,6 +14,7 @@ public class AirQualityDbContext : DbContext
     public DbSet<MonitoringAdmin> MonitoringAdmins { get; set; }
     public DbSet<SimulationConfiguration> SimulationConfigurations { get; set; }
     public DbSet<AlertThresholdSetting> AlertThresholdSettings { get; set; }
+    public DbSet<AdminUser> AdminUsers { get; set; }
 
     // For Extra Safety:
     //    This method is used to configure model relationships using Fluent API.
@@ -29,5 +30,32 @@ public class AirQualityDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict); // Prevent cascade deletion
                                                 // i.e., don’t auto-delete sensor readings
                                                 // when a sensor is deleted
+
+
+        //// Configure the AdminUser entity
+        //    modelBuilder.Entity<AdminUser>(entity =>
+        //    {
+        //        entity.ToTable("AdminUsers"); // Explicitly set table name (optional, but good practice)
+        //        entity.HasKey(e => e.Id);     // Define primary key
+
+        //        entity.Property(e => e.Name)
+        //            .IsRequired()
+        //            .HasMaxLength(100);
+
+        //        entity.Property(e => e.Gender)
+        //            .IsRequired();
+
+        //        entity.Property(e => e.Email)
+        //            .HasMaxLength(100);
+
+        //        entity.Property(e => e.UserRole)
+        //            .IsRequired();
+
+        //        entity.Property(e => e.RegisterDate)
+        //            .HasColumnType("datetime2") // Specify datetime2 for better compatibility
+        //            .HasDefaultValueSql("GETDATE()");
+        //    });
     }
+
+
 }
