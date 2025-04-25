@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using SDTP_Project1.Data;
 using SDTP_Project1.Models;
+using SDTP_Project1.Helpers;
 
 namespace SDTP_Project1.Services
 {
@@ -56,23 +57,23 @@ namespace SDTP_Project1.Services
 
             var now = DateTime.UtcNow;
             var activeSensors = await db.Sensors
-                                      .Where(s => s.IsActive)
-                                      .ToListAsync(token);
+                                        .Where(s => s.IsActive)
+                                        .ToListAsync(token);
 
             foreach (var sensor in activeSensors)
             {
-                // 1) Generate random pollutant values
-                double pm25 = Random.Shared.NextDouble() * 150;   // 0–150 µg/m³
-                double pm10 = Random.Shared.NextDouble() * 200;   // 0–200 µg/m³
-                double o3 = Random.Shared.NextDouble() * 180;   // 0–180 ppb
-                double no2 = Random.Shared.NextDouble() * 200;   // 0–200 ppb
-                double so2 = Random.Shared.NextDouble() * 75;    // 0–75 ppb
-                double co = Random.Shared.NextDouble() * 10;    // 0–10 ppm
+                // 1) Sample from weighted ranges
+                double pm25 = SimulationHelpers.SamplePM25();
+                double pm10 = SimulationHelpers.SamplePM10();
+                double o3 = SimulationHelpers.SampleO3();
+                double no2 = SimulationHelpers.SampleNO2();
+                double so2 = SimulationHelpers.SampleSO2();
+                double co = SimulationHelpers.SampleCO();
 
-                // 2) Simple AQI placeholder (e.g. max of normalized sub-indices)
-                int aqi = (int)(new[] { pm25 / 150, pm10 / 200, o3 / 180, no2 / 200, so2 / 75, co / 10 }.Max() * 500);
-                // scale to 0–500
+                // 2) Compute AQI using your AqiCalculator
+                int aqi = AqiCalculator.ComputeAqi(pm25, pm10, o3, no2, so2, co);
 
+                // 3) Round and store
                 var entry = new AirQualityData
                 {
                     SensorID = sensor.SensorID,
@@ -85,7 +86,6 @@ namespace SDTP_Project1.Services
                     CO = Round2(co),
                     AQI = aqi
                 };
-
 
                 db.AirQualityData.Add(entry);
             }

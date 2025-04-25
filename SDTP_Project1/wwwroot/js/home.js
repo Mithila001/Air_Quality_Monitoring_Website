@@ -1,123 +1,142 @@
 ﻿function initMap(sensors) {
-    // Define approximate bounds for Sri Lanka.
-    var southWest = L.latLng(5.9, 79.6);
-    var northEast = L.latLng(9.8, 81.9);
-    var bounds = L.latLngBounds(southWest, northEast);
-
-    // Updated center for Colombo.
-    var colomboCenter = [6.931, 79.847];
-
-    var map = L.map('map', {
-        center: colomboCenter,
-        zoom: 12,
-        minZoom: 12,
-        maxZoom: 18,
-        maxBounds: bounds,
-        maxBoundsViscosity: 1.0
+    // 1) Setup map
+    const southWest = L.latLng(5.9, 79.6);
+    const northEast = L.latLng(9.8, 81.9); // Fixed longitude value
+    const bounds = L.latLngBounds(southWest, northEast);
+    const center = [6.931, 79.847];
+    const map = L.map('map', {
+        center, zoom: 12, minZoom: 12, maxZoom: 18,
+        maxBounds: bounds, maxBoundsViscosity: 1.0
     });
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '© OpenStreetMap contributors'
+        maxZoom: 18, attribution: '© OpenStreetMap contributors'
     }).addTo(map);
+    setTimeout(() => { map.invalidateSize(); map.setView(center); }, 200);
 
-    // Invalidate size and recenter after a short delay.
-    setTimeout(function () {
-        map.invalidateSize();
-        map.setView(colomboCenter);
-    }, 200);
+    // 2) Create markers with attached sensor data
+    sensors.forEach(sensor => {
+        // Safety check for required data
+        if (!sensor) return;
 
-    sensors.forEach(function (sensor) {
-        var lat = sensor.latitude || sensor.Latitude;
-        var lng = sensor.longitude || sensor.Longitude;
-        var city = sensor.city || sensor.City;
-        var aqi = sensor.aqi || sensor.AQI;
-        var aqiColor = getAQIColor(aqi);
+        const lat = sensor.Latitude;
+        const lng = sensor.Longitude;
+        const city = sensor.City || 'Unknown';
 
-        // Use a unique id for the canvas (based on city name without spaces).
-        var canvasId = "chart-" + city.replace(/\s+/g, '');
-        var popupContent = `
-            <div class="popup-content">
-                <h5>${city}</h5>
-                <p><strong>AQI:</strong> <span style="color:${aqiColor}">${aqi}</span></p>
-                <p><strong>Total Readings:</strong> ${sensor.Readings.length}</p>
-                <canvas id="${canvasId}" style="width:300px; height:200px;"></canvas>
-            </div>
-        `;
+        // Safely handle AQI value
+        let aqi = 'N/A';
+        let color = 'gray';
 
-        // Create marker and bind the popup.
-        var marker = L.marker([lat, lng]).addTo(map)
+        if (sensor.AQI !== undefined && sensor.AQI !== null) {
+            aqi = sensor.AQI;
+            // Use a try-catch block to handle any issues with getAQIColor
+            try {
+                color = getAQIColor(aqi);
+            } catch (e) {
+                console.error('Error getting AQI color:', e);
+                color = 'gray'; // Fallback color
+            }
+        }
+
+        const readings = sensor.Readings || [];
+        const canvasId = `chart-${city.replace(/\s+/g, '')}-${Math.floor(Math.random() * 1000)}`;
+
+        const popupContent = `
+      <div class="popup-content">
+        <h5>${city}</h5>
+        <p><strong>AQI:</strong> <span style="color:${color}">${aqi}</span></p>
+        <p><strong>Total Readings:</strong> ${readings.length}</p>
+        <canvas id="${canvasId}" width="300" height="200"></canvas>
+      </div>`;
+
+        const marker = L.marker([lat, lng], {
+            sensor: {
+                readings: readings,
+                canvasId: canvasId
+            }
+        })
+            .addTo(map)
             .bindPopup(popupContent, { closeButton: false });
 
-        // Store timer ID on marker.
-        marker.closeTimeout = null;
+        // store one timeout handle per marker
+        marker._closeTimeout = null;
 
-        // Use mouseenter and mouseleave on marker.
-        marker.on('mouseover', function () {
-            clearTimeout(marker.closeTimeout);
-            this.openPopup();
+        // open on hover, close on leave
+        marker.on('mouseover', () => {
+            clearTimeout(marker._closeTimeout);
+            marker.openPopup();
         });
 
-        marker.on('mouseout', function () {
-            marker.closeTimeout = setTimeout(() => {
-                this.closePopup();
-            }, 250);
+        marker.on('mouseout', () => {
+            marker._closeTimeout = setTimeout(() => marker.closePopup(), 250);
+        });
+    });
+
+    // 3) Centralized popup event
+    map.on('popupopen', e => {
+        const marker = e.popup._source;
+        clearTimeout(marker._closeTimeout);
+        const popupEl = e.popup.getElement();
+
+        // When user hovers over popup, cancel close; when leaves, schedule it.
+        popupEl.addEventListener('mouseenter', () => clearTimeout(marker._closeTimeout));
+        popupEl.addEventListener('mouseleave', () => {
+            marker._closeTimeout = setTimeout(() => marker.closePopup(), 250);
         });
 
-        // When popup opens, add listeners to the popup element.
-        marker.on('popupopen', function (e) {
-            var popupEl = e.popup.getElement();
-
-            // Cancel timer if mouse enters the popup.
-            popupEl.addEventListener('mouseenter', function () {
-                clearTimeout(marker.closeTimeout);
-            });
-
-            // When mouse leaves the popup, start timer to close.
-            popupEl.addEventListener('mouseleave', function () {
-                marker.closeTimeout = setTimeout(() => {
-                    marker.closePopup();
-                }, 250);
-            });
-
-            // Render the chart inside the popup.
-            renderChart(canvasId, sensor.Readings);
-        });
+        // Render chart now that content is in the DOM
+        if (marker.options && marker.options.sensor) {
+            const canvas = popupEl.querySelector('canvas');
+            if (canvas) {
+                setTimeout(() => {
+                    try {
+                        renderChart(canvas.id, marker.options.sensor.readings);
+                    } catch (e) {
+                        console.error('Error rendering chart:', e);
+                    }
+                }, 50);
+            }
+        }
     });
 }
 
-// Function to determine color code based on AQI.
-function getAQIColor(aqi) {
-    if (aqi == null) return "gray";
-    if (aqi <= 50) return "green";
-    if (aqi <= 100) return "yellow";
-    if (aqi <= 150) return "orange";
-    if (aqi <= 200) return "red";
-    if (aqi <= 300) return "purple";
+// Safer version of getAQIColor
+function safeGetAQIColor(aqi) {
+    // Make sure aqi is a number
+    const aqiNum = Number(aqi);
+
+    // If aqi is not a valid number, return gray
+    if (isNaN(aqiNum)) return "gray";
+
+    // Regular color logic
+    if (aqiNum <= 50) return "green";
+    if (aqiNum <= 100) return "yellow";
+    if (aqiNum <= 150) return "orange";
+    if (aqiNum <= 200) return "red";
+    if (aqiNum <= 300) return "purple";
     return "maroon";
 }
 
-// Function to render a chart using Chart.js.
-// This example plots AQI over time.
+// Modify the renderChart function to return the chart instance
 function renderChart(canvasId, readings) {
-    if (!readings || readings.length === 0) return;
+    if (!readings || readings.length === 0) return null;
 
-    var labels = readings.map(function (r) {
-        return r.Timestamp; // Already formatted on server.
-    });
-    var aqiValues = readings.map(function (r) {
-        return r.AQI;
-    });
-
-    var ctx = document.getElementById(canvasId);
-    if (!ctx) return; // Safety check.
+    const ctx = document.getElementById(canvasId);
+    if (!ctx) return null; // Safety check.
 
     // Destroy any previous chart instance if it exists.
     if (ctx.chartInstance) {
         ctx.chartInstance.destroy();
     }
 
-    ctx.chartInstance = new Chart(ctx, {
+    const labels = readings.map(function (r) {
+        return r.Timestamp; // Already formatted on server.
+    });
+
+    const aqiValues = readings.map(function (r) {
+        return r.AQI;
+    });
+
+    const chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -149,4 +168,7 @@ function renderChart(canvasId, readings) {
             }
         }
     });
+
+    ctx.chartInstance = chartInstance;
+    return chartInstance;
 }

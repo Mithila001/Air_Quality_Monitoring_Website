@@ -5,30 +5,46 @@
 $(function () {
     // Toggle On/Off
     $(document).on("click", ".sensor-toggle", function () {
-        const btn = $(this),
-            id = btn.data("id"),
-            newStatus = !btn.data("isactive");
+        const btn = $(this);
+        const id = btn.attr("data-id");
+        // ALWAYS read the raw attribute and compare to lowercase "true"
+        const currentState = String(btn.attr("data-isactive")).toLowerCase() === "true";
+        const newState = !currentState;
+
+        console.log(`[Toggle] Sensor ${id}: ${currentState} → ${newState}`);
 
         $.ajax({
             url: "/Admin/ToggleSensorStatus",
             type: "POST",
-            data: { id, isActive: newStatus },
             headers: { "RequestVerificationToken": getAntiForgeryToken() },
+            data: { id: id, isActive: newState },
             success(resp) {
-                if (!resp.success) return alert(resp.message || "Error");
+                console.log("[Toggle] Response:", resp);
+                if (!resp.success) {
+                    alert(resp.message || "Error toggling sensor.");
+                    return;
+                }
+
+                // 1) Update the button attribute + text
                 btn
-                    .data("isactive", newStatus)
-                    .attr("data-isactive", newStatus)
-                    .text(newStatus ? "Disable" : "Enable");
+                    .attr("data-isactive", String(resp.newIsActive))
+                    .text(resp.newIsActive ? "Disable" : "Enable");
+
+                // 2) Update the badge classes & text
                 const badge = $("#status-" + id);
                 badge
-                    .toggleClass("bg-success", newStatus)
-                    .toggleClass("bg-danger", !newStatus)
-                    .text(newStatus ? "Active" : "Inactive");
-                let cnt = parseInt($("#deactivatedCount").text());
-                $("#deactivatedCount").text(newStatus ? Math.max(0, cnt - 1) : cnt + 1);
+                    .removeClass("bg-success bg-danger")
+                    .addClass(resp.newIsActive ? "bg-success" : "bg-danger")
+                    .text(resp.newIsActive ? "Active" : "Inactive");
+
+                // 3) Recount deactivated sensors from DOM
+                const totalDeactivated = $(".badge.bg-danger").length;
+                $("#deactivatedCount").text(totalDeactivated);
             },
-            error() { alert("Failed to toggle sensor."); }
+            error(xhr) {
+                console.error("[Toggle] AJAX error:", xhr);
+                alert("Failed to toggle sensor. See console for details.");
+            }
         });
     });
 
