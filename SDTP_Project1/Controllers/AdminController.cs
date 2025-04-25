@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using SDTP_Project1.Services;
 
 namespace SDTP_Project1.Controllers
 {
@@ -12,13 +13,16 @@ namespace SDTP_Project1.Controllers
     {
         private readonly ISensorRepository _sensorRepository;
         private readonly IAlertThresholdSettingRepository _alertRepo;
+        private readonly ISensorService _sensorService;
 
         public AdminController(
             ISensorRepository sensorRepository,
-            IAlertThresholdSettingRepository alertThresholdSettingRepository)
+            IAlertThresholdSettingRepository alertThresholdSettingRepository,
+            ISensorService sensorService)
         {
             _sensorRepository = sensorRepository;
             _alertRepo = alertThresholdSettingRepository;
+            _sensorService = sensorService;
         }
 
         // Dashboard
@@ -26,15 +30,17 @@ namespace SDTP_Project1.Controllers
         public async Task<IActionResult> Index()
         {
             var sensors = await _sensorRepository.GetAllSensorsAsync();
+            var averageAQI = await _sensorService.GetAverageAQILast30DaysForAllSensors();
+            ViewBag.AverageAQI = averageAQI;
             return View(sensors);
         }
-
         //–– CreateSensor ––
         [HttpGet]
         public IActionResult CreateSensor()
         {
             return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -48,7 +54,7 @@ namespace SDTP_Project1.Controllers
             }
 
             // 2. Generate SensorID and clear its ModelState error
-            sensor.SensorID = $"S_{sensor.City.Trim()}_{DateTime.Now:yyyyMMddHHmm}";
+            sensor.SensorID = $"S_{sensor.City.Substring(0, 2).ToUpper()}_{DateTime.Now:yyyyMMddHHmm}";
             ModelState.Remove(nameof(sensor.SensorID));
 
             // 3. Set the registration date

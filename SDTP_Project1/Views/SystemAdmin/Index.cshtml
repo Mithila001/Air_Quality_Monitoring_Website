@@ -11,64 +11,92 @@
 <div class="container-fluid px-4">
     <div class="row mb-4">
         <div class="col-12 mb-4">
-           
             <div class="row">
+
+                <!-- Total User Accounts -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">1,234</p>
-                            <h5 class="card-title text-muted">Total User Accounts</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalUserAccounts
+                            </p>
+                            <h5 class="text-muted">Total User Accounts</h5>
                         </div>
                     </div>
                 </div>
+
+                <!-- Total User Admins -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">50</p>
-                            <h5 class="card-title text-muted">Total User Admins</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalUserAdmins
+                            </p>
+                            <h5 class="text-muted">Total User Admins</h5>
                         </div>
                     </div>
                 </div>
+
+                <!-- Total System Admins -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">10</p>
-                            <h5 class="card-title text-muted">Total System Admins</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalSystemAdmins
+                            </p>
+                            <h5 class="text-muted">Total System Admins</h5>
                         </div>
                     </div>
                 </div>
+
+                <!-- Total Active Admins -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">60</p>
-                            <h5 class="card-title text-muted">Total Active Admins</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalActiveAdmins
+                            </p>
+                            <h5 class="text-muted">Total Active Admins</h5>
                         </div>
                     </div>
                 </div>
+
+                <!-- Total Deactive Admins -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">5</p>
-                            <h5 class="card-title text-muted">Total Deactive Admins</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalDeactiveAdmins
+                            </p>
+                            <h5 class="text-muted">Total Deactive Admins</h5>
                         </div>
                     </div>
                 </div>
+
+                <!-- Total Active Sensors -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">100</p>
-                            <h5 class="card-title text-muted">Total Active Sensors</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalActiveSensors
+                            </p>
+                            <h5 class="text-muted">Total Active Sensors</h5>
                         </div>
                     </div>
                 </div>
+
+                <!-- Total Deactivated Sensors -->
                 <div class="col-md-4 mb-3">
                     <div class="card shadow-lg rounded-4">
                         <div class="card-body text-center">
-                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">20</p>
-                            <h5 class="card-title text-muted">Total Deactivated Sensors</h5>
+                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
+                                @ViewBag.TotalDeactivatedSensors
+                            </p>
+                            <h5 class="text-muted">Total Deactivated Sensors</h5>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

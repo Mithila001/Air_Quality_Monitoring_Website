@@ -19,6 +19,11 @@ builder.Services.AddScoped<ISensorRepository, SensorRepository>();
 builder.Services.AddScoped<IAlertThresholdSettingRepository, AlertThresholdSettingRepository>();
 builder.Services.AddScoped<ISystemAdminRepository, SystemAdminRepository>();
 
+// Services
+builder.Services.AddScoped<ISensorService, SensorService>();
+
+
+
 // Load DevModeOptions from appsettings.json
 var initialDevMode = builder.Configuration.GetSection("DevModeOptions").Get<DevModeOptions>()?.Enabled ?? false;
 // Register runtime dev-mode state
