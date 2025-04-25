@@ -1,76 +1,149 @@
 ﻿@model IEnumerable<SDTP_Project1.Models.AdminUser>
 
+<partial name="_addNewAdmin" model="new SDTP_Project1.Models.AdminUser()" />
+
 @{
     ViewData["Title"] = "System Admin";
 }
 
 <h1 class="mb-4">System Administration</h1>
-<p class="mb-4">This is the dedicated section for system administrators.</p>
 
-<h2 class="mb-4">Admin Users</h2>
-
-<div class="row">
-    @foreach (var user in Model)
-    {
+<div class="container-fluid px-4">
+    <div class="row mb-4">
         <div class="col-12 mb-4">
-            <div class="card shadow-sm border-0 rounded-4">
-                <div class="card-body">
-                    <div class="row g-3 align-items-center">
-
-                        <!-- Block 1: Name + ID -->
-                        <div class="col-lg-3 col-md-6 text-md-start text-center">
-                            <h5 class="mb-1 text-primary">@user.Name</h5>
-                            <small class="text-muted">ID: @user.Id</small>
+           
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">1,234</p>
+                            <h5 class="card-title text-muted">Total User Accounts</h5>
                         </div>
-
-                        <!-- Block 2: Gender, Age, Role -->
-                        <div class="col-lg-3 col-md-6">
-                            <p class="mb-0 text-break">
-                                <strong>Gender:</strong> @user.Gender<br />
-                                <strong>Age:</strong> @user.Age<br />
-                                <strong>Role:</strong> @user.UserRole
-                            </p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">50</p>
+                            <h5 class="card-title text-muted">Total User Admins</h5>
                         </div>
-
-                        <!-- Block 3: Registered, Email, Phone -->
-                        <div class="col-lg-3 col-md-6">
-                            <p class="mb-0 text-break">
-                                <strong>Registered:</strong> @user.RegisterDate.ToShortDateString()<br />
-                                <strong>Email:</strong> @user.Email<br />
-                                <strong>Phone:</strong> @user.PhoneNumber
-                            </p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">10</p>
+                            <h5 class="card-title text-muted">Total System Admins</h5>
                         </div>
-
-                        <!-- Block 4: Status -->
-                        <div class="col-lg-1 col-md-3 col-sm-6 text-md-start text-center">
-                            <p class="mb-0">
-                                <strong>Status:</strong><br />
-                                @if (user.IsActive)
-                                {
-                                    <span class="badge bg-success">Active</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Inactive</span>
-                                }
-                            </p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">60</p>
+                            <h5 class="card-title text-muted">Total Active Admins</h5>
                         </div>
-
-                        <!-- Block 5: Actions -->
-                        <div class="col-lg-2 col-md-3 col-sm-6 text-end d-flex justify-content-center">
-                            <div class="btn-group" style="width: 80%;">
-                                <button type="button" 
-                                    class="btn btn-outline-primary rounded-pill btn-md d-flex justify-content-center align-items-center"
-                                    style=" height: 100%;" data-bs-toggle="modal"
-                                    data-bs-target="#editAdminModal-@user.Id">
-                                    <i class="bi bi-pencil-square me-2"></i> Edit
-                                </button>
-                            </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">5</p>
+                            <h5 class="card-title text-muted">Total Deactive Admins</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">100</p>
+                            <h5 class="card-title text-muted">Total Active Sensors</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card shadow-lg rounded-4">
+                        <div class="card-body text-center">
+                            <p class="card-text h1 mb-0" style="color: #6c757d; font-weight: bold; font-size: 2.5rem;">20</p>
+                            <h5 class="card-title text-muted">Total Deactivated Sensors</h5>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        @await Html.PartialAsync("_EditAdminUserModal", user)
-    }
+    </div>
+</div>
+
+
+
+<div class="container-fluid px-4">
+    <hr class="my-4">
+    <div class="w-100 d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 ms-3">Admin Users</h2>
+        <button class="btn btn-primary rounded-pill btn-lg me-3" data-bs-toggle="modal" data-bs-target="#addAdminModal">
+            <i class="bi bi-person-plus-fill me-2"></i> Register an Admin
+        </button>
+    </div>
+    <hr class="my-4">
+
+    <div class="row">
+        @foreach (var user in Model)
+        {
+            <div class="col-12 mb-4">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <div class="row g-3 align-items-center">
+
+                            <div class="col-lg-3 col-md-6 text-md-start text-center">
+                                <h5 class="mb-1 text-primary">@user.Name</h5>
+                                <small class="text-muted">ID: @user.Id</small>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6">
+                                <p class="mb-0 text-break">
+                                    <strong>Gender:</strong> @user.Gender<br />
+                                    <strong>Age:</strong> @user.Age<br />
+                                    <strong>Role:</strong> @user.UserRole
+                                </p>
+                            </div>
+
+                            <div class="col-lg-3 col-md-6">
+                                <p class="mb-0 text-break">
+                                    <strong>Registered:</strong> @user.RegisterDate.ToShortDateString()<br />
+                                    <strong>Email:</strong> @user.Email<br />
+                                    <strong>Phone:</strong> @user.PhoneNumber
+                                </p>
+                            </div>
+
+                            <div class="col-lg-1 col-md-3 col-sm-6 text-md-start text-center">
+                                <p class="mb-0">
+                                    <strong>Status:</strong><br />
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="col-lg-2 col-md-3 col-sm-6 text-end d-flex justify-content-center">
+                                <div class="btn-group" style="width: 80%;">
+                                    <button type="button"
+                                            class="btn btn-outline-primary rounded-pill btn-md d-flex justify-content-center align-items-center"
+                                            style=" height: 100%;" data-bs-toggle="modal"
+                                            data-bs-target="#editAdminModal-@user.Id">
+                                        <i class="bi bi-pencil-square me-2"></i> Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @await Html.PartialAsync("_EditAdminUserModal", user)
+        }
+    </div>
 </div>

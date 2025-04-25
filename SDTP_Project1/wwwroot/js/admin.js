@@ -18,6 +18,7 @@ $(function () {
                 if (!resp.success) return alert(resp.message || "Error");
                 btn
                     .data("isactive", newStatus)
+                    .attr("data-isactive", newStatus)
                     .text(newStatus ? "Disable" : "Enable");
                 const badge = $("#status-" + id);
                 badge

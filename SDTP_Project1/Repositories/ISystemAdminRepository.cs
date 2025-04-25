@@ -11,5 +11,7 @@ namespace SDTP_Project1.Repositories
         Task<AdminUser?> GetByIdAsync(int id);
         Task UpdateAsync(AdminUser user);
         Task DeleteAsync(int id);
+        Task AddAsync(AdminUser user);
+
     }
 }
