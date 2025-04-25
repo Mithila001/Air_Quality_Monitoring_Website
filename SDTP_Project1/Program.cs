@@ -35,6 +35,9 @@ builder.Services.AddSingleton(new DevModeState { Enabled = initialDevMode });
 
 // Register the hosted background simulation service
 builder.Services.AddHostedService<SensorDataSimulationService>();
+// For password hashing
+builder.Services.AddSingleton<IPasswordHasher<AdminUser>, PasswordHasher<AdminUser>>();
+
 
 // User Authentication --------------------------------------
 
