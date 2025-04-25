@@ -123,7 +123,7 @@ namespace SDTP_Project1.Controllers
 
             sensor.IsActive = isActive;
             await _sensorRepository.UpdateSensorAsync(sensor);
-            return Json(new { success = true });
+            return Json(new { success = true, newIsActive = sensor.IsActive });
         }
 
         //–– DeleteSensor ––

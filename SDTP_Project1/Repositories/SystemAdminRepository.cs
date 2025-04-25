@@ -42,5 +42,12 @@ namespace SDTP_Project1.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task AddAsync(AdminUser user)
+        {
+            _context.AdminUsers.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

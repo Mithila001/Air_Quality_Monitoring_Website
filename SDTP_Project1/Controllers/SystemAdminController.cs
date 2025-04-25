@@ -44,13 +44,28 @@ namespace SDTP_Project1.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpGet]
         public async Task<IActionResult> DeleteAdmin(int id)
         {
             await _systemAdminRepository.DeleteAsync(id);
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddAdmin(AdminUser adminUser)
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_addNewAdmin", adminUser); // Re-render modal with validation
+            }
+
+            adminUser.RegisterDate = DateTime.Now;
+            adminUser.IsActive = true;
+
+            await _systemAdminRepository.AddAsync(adminUser);
+            return RedirectToAction("Index");
+        }
+
 
 
     }
