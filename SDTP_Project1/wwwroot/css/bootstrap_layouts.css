@@ -1,0 +1,41 @@
+﻿.p-big {
+    padding: 5rem;
+}
+
+.pt-big {
+    padding-top: 5rem;
+}
+
+.pb-big {
+    padding-bottom: 5rem;
+}
+
+.pl-big {
+    padding-left: 5rem;
+}
+
+.pr-big {
+    padding-right: 5rem;
+}
+
+.px-big {
+    padding-left: 5rem;
+    padding-right: 5rem;
+}
+
+.py-big {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+/* Example of Responsive Padding */
+@media (max-width: 768px) {
+    .p-big {
+        padding: 3rem; /* Adjust padding for smaller screens */
+    }
+}
+
+/* Example of adding a custom padding in pixel values */
+.p-40px {
+    padding: 40px;
+}

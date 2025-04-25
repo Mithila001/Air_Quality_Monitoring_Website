@@ -1,0 +1,29 @@
+﻿/* Custom Color Classes */
+body {
+    font-family: 'Inter', sans-serif;
+
+}
+
+.bg-custom-dark {
+    background-color: #0f172a;
+}
+
+.text-custom-light {
+    color: #f8fafc;
+}
+
+.text-custom-gray {
+    color: #94a3b8;
+}
+
+.text-custom-blue {
+    color: #38bdf8;
+}
+
+.bg-custom-gray-light {
+    background-color: #f8fafc;
+}
+
+.bg-gradient-custom {
+    background-image: linear-gradient(to right, #3b82f6, #1d4ed8);
+}}

@@ -1,0 +1,76 @@
+﻿@model IEnumerable<SDTP_Project1.Models.AdminUser>
+
+@{
+    ViewData["Title"] = "System Admin";
+}
+
+<h1 class="mb-4">System Administration</h1>
+<p class="mb-4">This is the dedicated section for system administrators.</p>
+
+<h2 class="mb-4">Admin Users</h2>
+
+<div class="row">
+    @foreach (var user in Model)
+    {
+        <div class="col-12 mb-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body">
+                    <div class="row g-3 align-items-center">
+
+                        <!-- Block 1: Name + ID -->
+                        <div class="col-lg-3 col-md-6 text-md-start text-center">
+                            <h5 class="mb-1 text-primary">@user.Name</h5>
+                            <small class="text-muted">ID: @user.Id</small>
+                        </div>
+
+                        <!-- Block 2: Gender, Age, Role -->
+                        <div class="col-lg-3 col-md-6">
+                            <p class="mb-0 text-break">
+                                <strong>Gender:</strong> @user.Gender<br />
+                                <strong>Age:</strong> @user.Age<br />
+                                <strong>Role:</strong> @user.UserRole
+                            </p>
+                        </div>
+
+                        <!-- Block 3: Registered, Email, Phone -->
+                        <div class="col-lg-3 col-md-6">
+                            <p class="mb-0 text-break">
+                                <strong>Registered:</strong> @user.RegisterDate.ToShortDateString()<br />
+                                <strong>Email:</strong> @user.Email<br />
+                                <strong>Phone:</strong> @user.PhoneNumber
+                            </p>
+                        </div>
+
+                        <!-- Block 4: Status -->
+                        <div class="col-lg-1 col-md-3 col-sm-6 text-md-start text-center">
+                            <p class="mb-0">
+                                <strong>Status:</strong><br />
+                                @if (user.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inactive</span>
+                                }
+                            </p>
+                        </div>
+
+                        <!-- Block 5: Actions -->
+                        <div class="col-lg-2 col-md-3 col-sm-6 text-end d-flex justify-content-center">
+                            <div class="btn-group" style="width: 80%;">
+                                <button type="button" 
+                                    class="btn btn-outline-primary rounded-pill btn-md d-flex justify-content-center align-items-center"
+                                    style=" height: 100%;" data-bs-toggle="modal"
+                                    data-bs-target="#editAdminModal-@user.Id">
+                                    <i class="bi bi-pencil-square me-2"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @await Html.PartialAsync("_EditAdminUserModal", user)
+    }
+</div>

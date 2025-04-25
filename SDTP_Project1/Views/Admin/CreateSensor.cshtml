@@ -3,36 +3,37 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="max-w-xl mx-auto bg-white shadow rounded p-6">
-    <h2 class="text-2xl font-semibold mb-4 text-gray-700">Add New Sensor</h2>
-    <form asp-action="CreateSensor" method="post" class="space-y-4">
-        <div>
-            <label asp-for="SensorID" class="block text-sm font-medium text-gray-700"></label>
-            <input asp-for="SensorID" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
-            <span asp-validation-for="SensorID" class="text-red-600 text-sm"></span>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-4">
+                <h2 class="mb-4">Add New Sensor</h2>
+                <form asp-action="CreateSensor" method="post">
+                    @Html.AntiForgeryToken()   <!-- ★ CSRF token added -->
+
+                    <div class="mb-3">
+                        <label asp-for="City" class="form-label"></label>
+                        <input asp-for="City" class="form-control" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Latitude" class="form-label"></label>
+                        <input asp-for="Latitude" class="form-control" />
+                        <span asp-validation-for="Latitude" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Longitude" class="form-label"></label>
+                        <input asp-for="Longitude" class="form-control" />
+                        <span asp-validation-for="Longitude" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Add Sensor</button>
+                </form>
+            </div>
         </div>
-        <div>
-            <label asp-for="City" class="block text-sm font-medium text-gray-700"></label>
-            <input asp-for="City" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
-            <span asp-validation-for="City" class="text-red-600 text-sm"></span>
-        </div>
-        <div>
-            <label asp-for="Latitude" class="block text-sm font-medium text-gray-700"></label>
-            <input asp-for="Latitude" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
-            <span asp-validation-for="Latitude" class="text-red-600 text-sm"></span>
-        </div>
-        <div>
-            <label asp-for="Longitude" class="block text-sm font-medium text-gray-700"></label>
-            <input asp-for="Longitude" class="mt-1 block w-full border border-gray-300 rounded-md p-2" />
-            <span asp-validation-for="Longitude" class="text-red-600 text-sm"></span>
-        </div>
-        <div>
-            <label asp-for="Description" class="block text-sm font-medium text-gray-700"></label>
-            <textarea asp-for="Description" class="mt-1 block w-full border border-gray-300 rounded-md p-2"></textarea>
-            <span asp-validation-for="Description" class="text-red-600 text-sm"></span>
-        </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded">
-            Add Sensor
-        </button>
-    </form>
+    </div>
 </div>

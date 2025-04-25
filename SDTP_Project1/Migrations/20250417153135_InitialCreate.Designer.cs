@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SDTP_Project1.Data;
 
@@ -11,9 +12,11 @@ using SDTP_Project1.Data;
 namespace SDTP_Project1.Migrations
 {
     [DbContext(typeof(AirQualityDbContext))]
-    partial class AirQualityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417153135_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,33 @@ namespace SDTP_Project1.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AlertThresholdSetting", b =>
+                {
+                    b.Property<int>("ThresholdId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ThresholdId"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Parameter")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<float>("ThresholdValue")
+                        .HasColumnType("real");
+
+                    b.HasKey("ThresholdId");
+
+                    b.ToTable("AlertThresholdSettings");
+                });
 
             modelBuilder.Entity("MonitoringAdmin", b =>
                 {
@@ -54,51 +84,6 @@ namespace SDTP_Project1.Migrations
                     b.HasKey("AdminId");
 
                     b.ToTable("MonitoringAdmins");
-                });
-
-            modelBuilder.Entity("SDTP_Project1.Models.AdminUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("RegisterDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserRole")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AdminUsers");
                 });
 
             modelBuilder.Entity("SDTP_Project1.Models.AirQualityData", b =>
@@ -142,33 +127,6 @@ namespace SDTP_Project1.Migrations
                     b.HasIndex("SensorID");
 
                     b.ToTable("AirQualityData");
-                });
-
-            modelBuilder.Entity("SDTP_Project1.Models.AlertThresholdSetting", b =>
-                {
-                    b.Property<int>("ThresholdId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ThresholdId"));
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("LastUpdated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Parameter")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<float>("ThresholdValue")
-                        .HasColumnType("real");
-
-                    b.HasKey("ThresholdId");
-
-                    b.ToTable("AlertThresholdSettings");
                 });
 
             modelBuilder.Entity("SDTP_Project1.Models.Sensor", b =>

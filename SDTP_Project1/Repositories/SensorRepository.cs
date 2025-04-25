@@ -45,4 +45,21 @@ public class SensorRepository : ISensorRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task DeleteSensorAsync(string sensorId)
+    {
+        // Fetch related AirQualityData first
+        var relatedData = _context.AirQualityData
+                                  .Where(d => d.SensorID == sensorId);
+        _context.AirQualityData.RemoveRange(relatedData);
+
+        var sensor = await _context.Sensors.FindAsync(sensorId);
+        if (sensor != null)
+        {
+            _context.Sensors.Remove(sensor);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
 }

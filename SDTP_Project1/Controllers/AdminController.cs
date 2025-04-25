@@ -2,75 +2,176 @@
 using SDTP_Project1.Repositories;
 using SDTP_Project1.Models;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
-
-namespace SDTP_Project1.Controllers;
-public class AdminController : Controller
+namespace SDTP_Project1.Controllers
 {
-    private readonly ISensorRepository _sensorRepository;
-    // Inject additional repositories as needed, e.g., for SimulationConfiguration, AlertThresholdSetting, etc.
-
-    public AdminController(ISensorRepository sensorRepository)
+    public class AdminController : Controller
     {
-        _sensorRepository = sensorRepository;
-    }
+        private readonly ISensorRepository _sensorRepository;
+        private readonly IAlertThresholdSettingRepository _alertRepo;
 
-    // Dashboard view (System Dashboard)
-    public async Task<IActionResult> Index()
-    {
-        var sensors = await _sensorRepository.GetAllSensorsAsync();
-        // You can also aggregate statistics for the dashboard
-        return View(sensors);
-    }
-
-    // Sensor management actions
-    [HttpGet]
-    public IActionResult CreateSensor()
-    {
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> CreateSensor(Sensor sensor)
-    {
-        if (ModelState.IsValid)
+        public AdminController(
+            ISensorRepository sensorRepository,
+            IAlertThresholdSettingRepository alertThresholdSettingRepository)
         {
+            _sensorRepository = sensorRepository;
+            _alertRepo = alertThresholdSettingRepository;
+        }
+
+        // Dashboard
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var sensors = await _sensorRepository.GetAllSensorsAsync();
+            return View(sensors);
+        }
+
+        //–– CreateSensor ––
+        [HttpGet]
+        public IActionResult CreateSensor()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateSensor(Sensor sensor)
+        {
+            // 1. City must be provided
+            if (string.IsNullOrWhiteSpace(sensor.City))
+            {
+                ModelState.AddModelError(nameof(sensor.City), "City is required.");
+                return View(sensor);
+            }
+
+            // 2. Generate SensorID and clear its ModelState error
+            sensor.SensorID = $"S_{sensor.City.Trim()}_{DateTime.Now:yyyyMMddHHmm}";
+            ModelState.Remove(nameof(sensor.SensorID));
+
+            // 3. Set the registration date
+            sensor.RegistrationDate = DateTime.Now;
+
+            // 4. Initialize the navigation property so the binder/validator sees a valid (empty) collection
+            sensor.AirQualityReadings = new List<AirQualityData>();
+            //   —and remove any leftover ModelState entry for it
+            ModelState.Remove(nameof(sensor.AirQualityReadings));
+
+            // 5. Now check full validity
+            if (!ModelState.IsValid)
+                return View(sensor);
+
+            // 6. Persist and redirect
             await _sensorRepository.AddSensorAsync(sensor);
-            return RedirectToAction("Index");
+            TempData["SuccessMessage"] = "Sensor added successfully!";
+            return RedirectToAction(nameof(Index));
         }
-        return View(sensor);
-    }
 
-    // Edit sensor
-    [HttpGet]
-    public async Task<IActionResult> EditSensor(string id)
-    {
-        var sensor = await _sensorRepository.GetSensorByIdAsync(id);
-        if (sensor == null)
+
+        //–– EditSensor ––
+        [HttpGet]
+        public async Task<IActionResult> EditSensor(string id)
         {
-            return NotFound();
+            var sensor = await _sensorRepository.GetSensorByIdAsync(id);
+            if (sensor == null) return NotFound();
+            return PartialView("_EditSensorPartial", sensor);
         }
-        return View(sensor);
-    }
 
-    [HttpPost]
-    public async Task<IActionResult> EditSensor(Sensor sensor)
-    {
-        if (ModelState.IsValid)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditSensor(Sensor sensor)
         {
+            // ── 1. Neutralize the phantom navigation‐property error ──
+            //    The form never binds AirQualityReadings, so clear it out:
+            sensor.AirQualityReadings = new List<AirQualityData>();
+            ModelState.Remove(nameof(sensor.AirQualityReadings));
+
+            // ── 2. Re-check ModelState now that only your posted fields remain ──
+            if (!ModelState.IsValid)
+            {
+                // Return the partial view (with validation messages) back into the modal
+                return PartialView("_EditSensorPartial", sensor);
+            }
+
+            // ── 3. Fetch existing, apply updates, save ──
+            var existing = await _sensorRepository.GetSensorByIdAsync(sensor.SensorID);
+            if (existing == null)
+                return NotFound();
+
+            existing.City = sensor.City;
+            existing.Latitude = sensor.Latitude;
+            existing.Longitude = sensor.Longitude;
+            existing.Description = sensor.Description;
+
+            await _sensorRepository.UpdateSensorAsync(existing);
+
+            // ── 4. Signal success back to your AJAX handler ──
+            return Json(new { success = true });
+        }
+
+
+        //–– ToggleSensorStatus ––
+        [HttpPost]
+        [ValidateAntiForgeryToken]   // ← must have this
+        public async Task<IActionResult> ToggleSensorStatus(string id, bool isActive)
+        {
+            var sensor = await _sensorRepository.GetSensorByIdAsync(id);
+            if (sensor == null)
+                return Json(new { success = false, message = "Sensor not found." });
+
+            sensor.IsActive = isActive;
             await _sensorRepository.UpdateSensorAsync(sensor);
-            return RedirectToAction("Index");
+            return Json(new { success = true });
         }
-        return View(sensor);
-    }
 
-    // Deactivate sensor
-    [HttpPost]
-    public async Task<IActionResult> DeactivateSensor(string id)
-    {
-        await _sensorRepository.DeactivateSensorAsync(id);
-        return RedirectToAction("Index");
-    }
+        //–– DeleteSensor ––
+        [HttpPost]
+        [ValidateAntiForgeryToken]   // ← must have this
+        public async Task<IActionResult> DeleteSensor(string id)
+        {
+            var sensor = await _sensorRepository.GetSensorByIdAsync(id);
+            if (sensor == null) return Json(new { success = false, message = "Sensor not found." });
 
-    // Similarly, add actions for Simulation Configuration, Alert Threshold Settings, and User Account Management.
+            await _sensorRepository.DeleteSensorAsync(id);
+            return Json(new { success = true, message = "Sensor deleted successfully!" });
+        }
+
+        //–– Alert Threshold Settings ––
+        [HttpGet]
+        public async Task<IActionResult> AlertThresholdSettings()
+        {
+            var settings = await _alertRepo.GetAllAsync();
+            return PartialView("_AlertThresholdSettingsPartial", settings);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]   // ← must have this
+        public async Task<IActionResult> UpdateAlertThresholds([FromBody] List<AlertThresholdSetting> updatedSettings)
+        {
+            if (updatedSettings == null || !updatedSettings.Any())
+                return Json(new { success = false, message = "No settings to update." });
+
+            try
+            {
+                foreach (var s in updatedSettings)
+                {
+                    var exist = await _alertRepo.GetByParameterAsync(s.Parameter);
+                    if (exist != null)
+                    {
+                        exist.ThresholdValue = s.ThresholdValue;
+                        exist.IsActive = s.IsActive;
+                        exist.LastUpdated = DateTime.Now;
+                        await _alertRepo.UpdateAsync(exist);
+                    }
+                }
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+    }
 }
