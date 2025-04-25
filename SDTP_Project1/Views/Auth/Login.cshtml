@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    var returnUrl = (string)ViewData["ReturnUrl"];
+}
+<h2>Login</h2>
+<form asp-action="Login" method="post">
+    <input type="hidden" name="returnUrl" value="@returnUrl" />
+    <div>
+        <label>Email</label>
+        <input type="email" name="email" required />
+    </div>
+    <div>
+        <label>Password</label>
+        <input type="password" name="password" required />
+    </div>
+    <button type="submit">Log in</button>
+</form>
+@if (!User.Identity.IsAuthenticated)
+{
+    <p>Not registered? Contact your system administrator.</p>
+}

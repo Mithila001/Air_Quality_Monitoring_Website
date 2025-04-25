@@ -3,6 +3,8 @@ using SDTP_Project1.Data;
 using SDTP_Project1.Repositories;
 using SDTP_Project1.Services;
 using SDTP_Project1.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +21,8 @@ builder.Services.AddScoped<ISensorRepository, SensorRepository>();
 builder.Services.AddScoped<IAlertThresholdSettingRepository, AlertThresholdSettingRepository>();
 builder.Services.AddScoped<ISystemAdminRepository, SystemAdminRepository>();
 
+
+
 // Services
 builder.Services.AddScoped<ISensorService, SensorService>();
 
@@ -31,6 +35,23 @@ builder.Services.AddSingleton(new DevModeState { Enabled = initialDevMode });
 
 // Register the hosted background simulation service
 builder.Services.AddHostedService<SensorDataSimulationService>();
+
+// User Authentication --------------------------------------
+
+//  Install and add Identity (for PasswordHasher<T>)
+builder.Services.AddSingleton<IPasswordHasher<AdminUser>, PasswordHasher<AdminUser>>();
+
+// 1. Add cookie authentication
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+    });
+
+
+
 
 var app = builder.Build();
 
@@ -47,10 +68,23 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();    // MUST come BEFORE UseAuthorization()
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
+
+//var hasher = new PasswordHasher<AdminUser>();
+//var hash = hasher.HashPassword(null, "1234");
+
+//Console.WriteLine($"HASHED 1234 = {hash}");
+
+
 app.Run();
+
+
+

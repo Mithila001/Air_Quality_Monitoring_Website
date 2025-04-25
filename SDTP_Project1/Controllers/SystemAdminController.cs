@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDTP_Project1.Models;
 using SDTP_Project1.Repositories;
@@ -6,6 +7,7 @@ using SDTP_Project1.Repositories;
 namespace SDTP_Project1.Controllers
 {
 
+    [Authorize(Roles = "System Admin")]
     public class SystemAdminController : Controller
     {
         private readonly ISystemAdminRepository _systemAdminRepository; //Changed

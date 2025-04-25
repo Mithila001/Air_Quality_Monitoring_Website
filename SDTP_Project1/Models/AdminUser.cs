@@ -26,12 +26,17 @@ namespace SDTP_Project1.Models
 
         public DateTime RegisterDate { get; set; } = DateTime.Now; // Default to current date and time
 
-        // Optional: Add other relevant properties
         [EmailAddress(ErrorMessage = "Invalid email address.")]
         [StringLength(100, ErrorMessage = "Email cannot be longer than 100 characters.")]
         public string Email { get; set; }
 
         [StringLength(20, ErrorMessage = "Phone number cannot be longer than 20 characters.")]
         public string PhoneNumber { get; set; }
+
+        // Passwprd Hash
+        [Required, DataType(DataType.Password)]
+        [StringLength(100)]
+        public string PasswordHash { get; set; }
+
     }
 }

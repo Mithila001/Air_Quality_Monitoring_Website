@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using SDTP_Project1.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SDTP_Project1.Controllers
 {
+    //[Authorize(Roles = "User Admin")]
     public class AdminController : Controller
     {
         private readonly ISensorRepository _sensorRepository;
