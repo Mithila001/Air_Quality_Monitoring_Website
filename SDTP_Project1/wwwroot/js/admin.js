@@ -23,6 +23,7 @@ $(function () {
             $("#editSensorModal").modal('show');
         }).fail(xhr => {
             console.error("Error loading sensor form:", xhr.responseText);
+            showNotification("Failed to load sensor form.", 'danger');
         });
     });
 
@@ -56,7 +57,8 @@ $(function () {
             },
             error(xhr) {
                 console.error("Toggle error:", xhr);
-                alert("Failed to toggle sensor.");
+                showNotification("Failed to toggle sensor.", 'danger');
+
             }
         });
     });
@@ -79,7 +81,7 @@ $(function () {
                 location.reload();
             },
             error() {
-                alert("Failed to delete sensor.");
+                showNotification("Failed to delete sensor.", 'danger');
             }
         });
     });
@@ -92,6 +94,7 @@ $(function () {
             $("#alertThresholdSettingsModal").modal('show');
         }).fail(xhr => {
             console.error("Error loading thresholds:", xhr.responseText);
+            showNotification("Failed to load threshold settings.", 'danger');
         });
     });
 
@@ -113,7 +116,7 @@ $(function () {
                 }
             },
             error() {
-                alert("Failed to update sensor.");
+                showNotification("Failed to update sensor.", 'danger');
             }
         });
     });
@@ -140,11 +143,11 @@ $(function () {
                     $("#alertThresholdSettingsModal").modal("hide");
                     location.reload();
                 } else {
-                    alert(resp.message || "Error saving settings.");
+                    showNotification(resp.message || "Error saving settings.", 'warning');
                 }
             },
             error() {
-                alert("Failed to save thresholds.");
+                showNotification("Failed to save thresholds.", 'danger');
             }
         });
     });
@@ -184,6 +187,7 @@ $(function () {
 
     connection.start()
         .catch(function (err) {
-        console.error("SignalR connection error:", err.toString());
+            console.error("SignalR connection error:", err.toString());
+            showNotification("Failed to connect to real-time updates. Some data may not be live.", 'warning', 10000); // Longer duration
     });
 });
