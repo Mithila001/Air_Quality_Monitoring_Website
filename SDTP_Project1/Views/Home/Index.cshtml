@@ -12,18 +12,20 @@
     <div class="row h-100">
         <div class="col-md-auto p-0" style="width: 400px;">
             <!-- Left Column: Cards container -->
-            <div class="bg-light overflow-auto p-3 border-end">
-                @foreach (var sensor in orderedSensors)
-                {
-                    <div class="card mb-3 shadow-sm border">
-                        <div class="card-body">
-                            <h5 class="card-title">@sensor.City</h5> <p class="card-text mb-1"> <strong>Latest AQI:</strong> @sensor.LatestAQI </p>
-                            <p class="card-text">
-                                <small class="text-muted"> <strong>Total Readings:</strong> @sensor.Readings.Count </small>
-                            </p>
+            <div class="col-md-auto p-0" style="width: 400px;">
+                <div class="bg-light overflow-auto p-3 border-end" style="max-height: 80vh;">
+                    @foreach (var sensor in orderedSensors)
+                    {
+                        <div class="card mb-3 shadow-sm border">
+                            <div class="card-body">
+                                <h5 class="card-title">@sensor.City</h5> <p class="card-text mb-1"> <strong>Latest AQI:</strong> @sensor.LatestAQI </p>
+                                <p class="card-text">
+                                    <small class="text-muted"> <strong>Total Readings:</strong> @sensor.Readings.Count </small>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
         <div class="col vw-100 vh-100">
@@ -33,15 +35,30 @@
 </div>
 
 @section Scripts {
-    <!-- Load Leaflet CSS and JS from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- Font Awesome (for the marker icons) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <!-- Leaflet.AwesomeMarkers CSS -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
+
+    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <!-- Load Chart.js from CDN -->
+    <!-- Leaflet.AwesomeMarkers JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Reference external home.js for map initialization -->
+    <!-- Your map initialization code -->
     <script src="~/js/home.js"></script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {

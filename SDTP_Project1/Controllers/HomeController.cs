@@ -30,7 +30,9 @@ namespace SDTP_Project1.Controllers
                     City = g.First().Sensor.City,
                     Latitude = g.First().Sensor.Latitude,
                     Longitude = g.First().Sensor.Longitude,
-                    Readings = g.ToList()
+                    Readings = g.OrderByDescending(r => r.Timestamp)
+                                .Take(30) // Take the latest 100 readings
+                                .ToList()
                 })
                 .ToList();
 
