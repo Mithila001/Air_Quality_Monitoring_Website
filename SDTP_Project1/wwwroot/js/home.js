@@ -51,12 +51,12 @@
         const canvasId = `chart-${city.replace(/\s+/g, '')}-${Math.floor(Math.random() * 1000)}`;
 
         const popupContent = `
-      <div class="popup-content">
-        <h5>${city}</h5>
-        <p><strong>AQI:</strong> <span style="color:${color}">${aqi}</span></p>
-        <p><strong>Total Readings:</strong> ${readings.length}</p>
-        <canvas id="${canvasId}" width="300" height="200"></canvas>
-      </div>`;
+<div class="popup-content p-3">
+    <h5 class="mb-2 fw-bold text-primary">${city}</h5>
+    <p class="mb-1"><strong class="me-1">AQI:</strong> <span class="badge rounded-pill" style="background-color:${color}; color: white;">${aqi}</span></p>
+    <p class="mb-0"><strong class="me-1">Total Readings:</strong> <span class="badge bg-secondary rounded-pill">${readings.length}</span></p>
+    <canvas id="${canvasId}" width="300" height="200" class="mt-2 border"></canvas>
+</div>`;
 
         const marker = L.marker([lat, lng], {
             icon: awesomeIcon,

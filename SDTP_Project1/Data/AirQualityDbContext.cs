@@ -15,6 +15,7 @@ public class AirQualityDbContext : DbContext
     public DbSet<SimulationConfiguration> SimulationConfigurations { get; set; }
     public DbSet<AlertThresholdSetting> AlertThresholdSettings { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
+    public DbSet<AirQualityAlertHistory> AirQualityAlertHistory { get; set; }
 
     // For Extra Safety:
     //    This method is used to configure model relationships using Fluent API.

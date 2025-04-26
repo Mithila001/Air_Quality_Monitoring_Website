@@ -7,6 +7,8 @@ using System.Linq;
 using System;
 using SDTP_Project1.Services;
 using Microsoft.AspNetCore.Authorization;
+using SDTP_Project1.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace SDTP_Project1.Controllers
 {
@@ -16,15 +18,18 @@ namespace SDTP_Project1.Controllers
         private readonly ISensorRepository _sensorRepository;
         private readonly IAlertThresholdSettingRepository _alertRepo;
         private readonly ISensorService _sensorService;
+        private readonly AirQualityDbContext _db;
 
         public AdminController(
             ISensorRepository sensorRepository,
             IAlertThresholdSettingRepository alertThresholdSettingRepository,
-            ISensorService sensorService)
+            ISensorService sensorService,
+            AirQualityDbContext db)
         {
             _sensorRepository = sensorRepository;
             _alertRepo = alertThresholdSettingRepository;
             _sensorService = sensorService;
+            _db = db;
         }
 
         // Dashboard
@@ -34,6 +39,15 @@ namespace SDTP_Project1.Controllers
             var sensors = await _sensorRepository.GetAllSensorsAsync();
             var averageAQI = await _sensorService.GetAverageAQILast30DaysForAllSensors();
             ViewBag.AverageAQI = averageAQI;
+
+            // Fetch last 20 alerts
+            var recentAlerts = await _db.AirQualityAlertHistory
+                .OrderByDescending(a => a.AlertedTime)
+                .Take(20)
+                .ToListAsync();
+
+            ViewBag.RecentAlerts = recentAlerts;
+
             return View(sensors);
         }
         //–– CreateSensor ––

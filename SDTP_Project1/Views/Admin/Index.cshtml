@@ -17,94 +17,168 @@
 
 <div class="container-fluid mt-4">
     @* Dashboard Info Sector *@
-    <div class="row g-4">
+    <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
-                <div class="card-body">
-                    <h5 class="card-title ">Total Sensors</h5>
-                    <p class="card-text fs-3 fw-bold">@(Model.Count())</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
-                <div class="card-body">
-                    <h5 class="card-title">Average Air Quality (30 days)</h5>
-                    <p class="card-text fs-3 fw-bold">
-                        @(((double)ViewBag.AverageAQI).ToString("N2")) ppm
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
-                <div class="card-body">
-                    <h5 class="card-title">Deactivated Sensors</h5>
-                    <p id="deactivatedCount" class="card-text fs-3 fw-bold">@(Model.Count(s => !s.IsActive))</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="text-end  mt-4">
-        <a class="btn btn-primary me-2" href="@Url.Action("CreateSensor", "Admin")">Add New Sensor</a>
-        <button class="btn btn-info" id="openThresholdSettings">Alert Threshold Settings</button>
-    </div>
-
-    <div class="mt-4 overflow-auto" style="max-height: 60vh;">
-        <div class="row g-3">
-            @foreach (var sensor in Model)
-            {
-                <div class="col-12">
-                    <div class="card shadow">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div class="row g-3 flex-grow-1">
-                                <div class="col-md-3">
-                                    <h6 class="fw-semibold">Sensor ID</h6>
-                                    <p class="text-secondary">@sensor.SensorID</p>
-                                </div>
-                                <div class="col-md-3">
-                                    <h6 class="fw-semibold">City</h6>
-                                    <p class="text-secondary">@sensor.City</p>
-                                </div>
-                                <div class="col-md-3">
-                                    <h6 class="fw-semibold">Coordinates</h6>
-                                    <p class="text-secondary">@sensor.Latitude, @sensor.Longitude</p>
-                                </div>
-                                <div class="col-md-3">
-                                    <h6 class="fw-semibold">Status</h6>
-                                    <span id="status-@sensor.SensorID" class="badge @(sensor.IsActive ? "bg-success" : "bg-danger")">
-                                        @(sensor.IsActive ? "Active" : "Inactive")
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button class="edit-btn btn btn-warning btn-sm" data-id="@sensor.SensorID">Edit</button>
-
-                                <button class="btn btn-secondary btn-sm sensor-toggle"
-                                        data-id="@sensor.SensorID"
-                                        data-isactive="@sensor.IsActive">
-                                    @(sensor.IsActive ? "Disable" : "Enable")
-                                </button>
-
-                                <button class="btn btn-danger btn-sm sensor-delete"
-                                        data-id="@sensor.SensorID">
-                                    Delete
-                                </button>
-                                
-
-                            </div>
-
-
-                        </div>
+            <div class="card bg-primary text-white shadow-lg h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="bi bi-node-plus-fill fs-2"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Total Sensors</h6>
+                        <p class="card-text fs-3 fw-bold mb-0">@(Model.Count())</p>
                     </div>
                 </div>
-            }
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-success text-white shadow-lg h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="bi bi-bar-chart-line-fill fs-2"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Average Air Quality (30 days)</h6>
+                        <p class="card-text fs-3 fw-bold mb-0">
+                            @(((double)ViewBag.AverageAQI).ToString("N2")) ppm
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card bg-warning text-white shadow-lg h-100">
+                <div class="card-body d-flex align-items-center">
+                    <div class="me-3">
+                        <i class="bi bi-x-octagon-fill fs-2"></i>
+                    </div>
+                    <div>
+                        <h6 class="card-title mb-0">Deactivated Sensors</h6>
+                        <p id="deactivatedCount" class="card-text fs-3 fw-bold mb-0">@(Model.Count(s => !s.IsActive))</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="text-end mt-4">
+        <a class="btn btn-primary me-2" href="@Url.Action("CreateSensor", "Admin")"><i class="bi bi-plus-circle me-1"></i> Add New Sensor</a>
+        <button class="btn btn-info" id="openThresholdSettings"><i class="bi bi-sliders me-1"></i> Alert Threshold Settings</button>
+    </div>
+
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left: Sensors -->
+            <div class="col-lg-8">
+                <div class="row g-3 overflow-auto" style="max-height:60vh;">
+                    @foreach (var sensor in Model)
+                    {
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div class="row g-3 flex-grow-1">
+                                        <div class="col-md-3">
+                                            <h6 class="fw-semibold">Sensor ID</h6>
+                                            <p class="text-secondary">@sensor.SensorID</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="fw-semibold">City</h6>
+                                            <p class="text-secondary">@sensor.City</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="fw-semibold">Coordinates</h6>
+                                            <p class="text-secondary">@sensor.Latitude, @sensor.Longitude</p>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="fw-semibold">Status</h6>
+                                            <span id="status-@sensor.SensorID" class="badge @(sensor.IsActive ? "bg-success" : "bg-danger")">
+                                                @(sensor.IsActive ? "Active" : "Inactive")
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button class="edit-btn btn btn-warning btn-sm" data-id="@sensor.SensorID">Edit</button>
+
+                                        <button class="btn btn-secondary btn-sm sensor-toggle"
+                                                data-id="@sensor.SensorID"
+                                                data-isactive="@sensor.IsActive">
+                                            @(sensor.IsActive ? "Disable" : "Enable")
+                                        </button>
+
+                                        <button class="btn btn-danger btn-sm sensor-delete"
+                                                data-id="@sensor.SensorID">
+                                            Delete
+                                        </button>
+
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Right: Alerts -->
+            <div class="col-lg-4">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-bell-fill text-danger me-2"></i>
+                    <h5 class="mb-0">Live Alerts</h5>
+                </div>
+                <div id="alertsContainer"
+                     class="d-flex flex-column overflow-auto border rounded p-2"
+                     style="max-height: 60vh; background-color: #f8f9fa;">
+                    @* Render the last 20 from DB *@
+                    @if (ViewBag.RecentAlerts != null && ((List<SDTP_Project1.Models.AirQualityAlertHistory>)ViewBag.RecentAlerts).Any())
+                    {
+                        @foreach (var alert in (List<SDTP_Project1.Models.AirQualityAlertHistory>)ViewBag.RecentAlerts)
+                        {
+                            <div class="card mb-2 shadow-sm border-0">
+                                <div class="card-body p-3">
+                                    <h6 class="card-title mb-2 text-truncate">
+                                        <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>
+                                        Sensor @alert.SensorID breached @alert.Parameter
+                                    </h6>
+                                    <p class="card-text mb-2 small">
+                                        Value: <span class="fw-bold text-primary">@alert.CurrentValue</span>
+                                        <i class="bi bi-arrow-right me-1 ms-1"></i>
+                                        Threshold: <span class="fw-bold text-danger">@alert.ThresholdValue</span>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>
+                                            @alert.AlertedTime.ToLocalTime().ToString("h:mm:ss tt")
+                                        </small>
+                                        @if (alert.CurrentValue >= alert.ThresholdValue)
+                                        {
+                                            <span class="badge bg-danger rounded-pill">Breached</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success rounded-pill">Normal</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted p-3">
+                            <i class="bi bi-info-circle-fill me-2"></i> No recent alerts.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
 </div>
 
 <div id="editSensorModal" class="modal fade" tabindex="-1">
@@ -135,5 +209,13 @@
     @Html.AntiForgeryToken()
 </form>
 
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"
+            integrity="sha512-…"
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="~/js/admin.js"></script>
 }
+
+
 
