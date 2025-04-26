@@ -29,13 +29,23 @@
         if (sensor.AQI !== undefined && sensor.AQI !== null) {
             aqi = sensor.AQI;
             // Use a try-catch block to handle any issues with getAQIColor
-            try {
-                color = getAQIColor(aqi);
-            } catch (e) {
-                console.error('Error getting AQI color:', e);
-                color = 'gray'; // Fallback color
-            }
+             try {
+                 color = safeGetAQIColor(aqi);
+
+             } catch (e) {
+                    console.error('Error getting AQI color:', e);
+                    color = 'gray';
+             }
+           
         }
+
+        const awesomeIcon = L.AwesomeMarkers.icon({
+            icon: 'info-sign', // or any other FA icon like 'leaf', 'cloud', etc.
+            prefix: 'glyphicon', // change to 'fa' if using Font Awesome
+            markerColor: mapAQIColorToMarkerColor(color),
+            iconColor: 'white'
+        });
+
 
         const readings = sensor.Readings || [];
         const canvasId = `chart-${city.replace(/\s+/g, '')}-${Math.floor(Math.random() * 1000)}`;
@@ -49,6 +59,7 @@
       </div>`;
 
         const marker = L.marker([lat, lng], {
+            icon: awesomeIcon,
             sensor: {
                 readings: readings,
                 canvasId: canvasId
@@ -99,6 +110,19 @@
     });
 }
 
+function mapAQIColorToMarkerColor(hexColor) {
+    switch (hexColor.toLowerCase()) {
+        case 'green': return 'green';
+        case 'yellow': return 'orange';  // AwesomeMarkers has 'orange', not yellow
+        case 'orange': return 'orange';
+        case 'red': return 'red';
+        case 'purple': return 'purple';
+        case 'maroon': return 'darkred';
+        default: return 'gray';
+    }
+}
+
+
 // Safer version of getAQIColor
 function safeGetAQIColor(aqi) {
     // Make sure aqi is a number
@@ -121,48 +145,44 @@ function renderChart(canvasId, readings) {
     if (!readings || readings.length === 0) return null;
 
     const ctx = document.getElementById(canvasId);
-    if (!ctx) return null; // Safety check.
+    if (!ctx) return null;
 
-    // Destroy any previous chart instance if it exists.
     if (ctx.chartInstance) {
         ctx.chartInstance.destroy();
     }
 
-    const labels = readings.map(function (r) {
-        return r.Timestamp; // Already formatted on server.
-    });
-
-    const aqiValues = readings.map(function (r) {
-        return r.AQI;
-    });
+    const labels = readings.map(r => r.Timestamp);
+    const aqiValues = readings.map(r => r.AQI);
 
     const chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
             datasets: [{
-                label: 'AQI over time',
+                label: 'AQI Trend',
                 data: aqiValues,
-                borderColor: 'rgba(75, 192, 192, 1)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.1)',
                 borderWidth: 2,
-                fill: false,
-                tension: 0.1
+                fill: true,
+                tension: 0.2,
+                pointRadius: 3
             }]
         },
         options: {
-            responsive: false,
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'AQI'
-                    }
+                    title: { display: true, text: 'Air Quality Index' }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Time'
+                    title: { display: true, text: 'Date' },
+                    ticks: {
+                        callback: function (value) {
+                            const date = new Date(this.getLabelForValue(value));
+                            return `${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getDate().toString().padStart(2, '0')}`;
+                        }
                     }
                 }
             }

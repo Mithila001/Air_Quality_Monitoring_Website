@@ -30,8 +30,10 @@
         <div class="col-md-4">
             <div class="card bg-gradient-custom text-white shadow-lg h-100 ">
                 <div class="card-body">
-                    <h5 class="card-title">Average Air Quality</h5>
-                    <p class="card-text fs-3 fw-bold">XX ppm</p>
+                    <h5 class="card-title">Average Air Quality (30 days)</h5>
+                    <p class="card-text fs-3 fw-bold">
+                        @(((double)ViewBag.AverageAQI).ToString("N2")) ppm
+                    </p>
                 </div>
             </div>
         </div>
@@ -92,6 +94,7 @@
                                         data-id="@sensor.SensorID">
                                     Delete
                                 </button>
+                                
 
                             </div>
 
@@ -131,65 +134,6 @@
 <form id="antiforgeryForm" style="display: none;">
     @Html.AntiForgeryToken()
 </form>
-
-
-
-@section Scripts {
-    <script>
-        $(document).ready(function(){
-            // Open modal with form content
-            $(".edit-btn").click(function(){
-                var sensorId = $(this).data("id");
-                $.get('@Url.Action("EditSensor", "Admin")', { id: sensorId }, function(data){
-                    $("#editSensorContent").html(data);
-                    $("#editSensorModal").modal('show');
-                }).fail(function(xhr){
-                    console.error("Error loading sensor form:", xhr.responseText);
-                });
-            });
-
-            // Delegate submit event for the dynamically loaded form
-            $(document).on("submit", "#editSensorContent form", function(e) {
-                e.preventDefault(); // Prevent normal form submission
-                console.log("Form submit intercepted.", e);
-
-                var form = $(this);
-                console.log("Form action attribute:", form.attr("action"));
-                console.log("Serialized form data:", form.serialize());
-
-                // Log before AJAX call
-                console.log("AJAX call is about to be made.");
-
-                $.ajax({
-                    url: form.attr("action"),
-                    type: "POST",
-                    data: form.serialize(),
-                    success: function(response) {
-                        console.log("AJAX call succeeded.", response);
-                        if (response.success) {
-                            $("#editSensorModal").modal('hide'); // Close modal on success
-                            location.reload(); // Reload page to show updated data
-                        } else {
-                            // Assume response is HTML (partial view with errors)
-                            $("#editSensorContent").html(response);
-                        }
-                    },
-                    error: function(xhr) {
-                        console.error("Error updating sensor:", xhr.responseText);
-                    }
-                });
-            });
-        });
-
-        $("#openThresholdSettings").click(function(){
-            $.get('@Url.Action("AlertThresholdSettings", "Admin")', function(data){
-                $("#alertThresholdSettingsContent").html(data);
-                $("#alertThresholdSettingsModal").modal('show');
-            }).fail(function(xhr){
-                console.error("Error loading alert threshold settings:", xhr.responseText);
-            });
-        });
-    </script>
 
 }
 

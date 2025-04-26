@@ -1,57 +1,74 @@
-﻿function getAntiForgeryToken() {
+﻿// wwwroot/js/admin.js
+
+function getAntiForgeryToken() {
     return $('input[name="__RequestVerificationToken"]').val();
 }
 
 $(function () {
-    // Toggle On/Off
-    $(document).on("click", ".sensor-toggle", function () {
+    // 1) Unbind any previous handlers to avoid duplicates
+    $(document)
+        .off('click', '.edit-btn')
+        .off('click', '.sensor-toggle')
+        .off('click', '.sensor-delete')
+        .off('click', '#openThresholdSettings')
+        .off('submit', '#editSensorForm')
+        .off('submit', '#alertThresholdSettingsForm');
+
+    // 2) Edit Sensor: open modal
+    $(document).on("click", ".edit-btn", function (e) {
+        e.preventDefault();
+        const sensorId = $(this).data("id");
+        $.get('/Admin/EditSensor', { id: sensorId }, function (data) {
+            $("#editSensorContent").html(data);
+            $("#editSensorModal").modal('show');
+        }).fail(xhr => {
+            console.error("Error loading sensor form:", xhr.responseText);
+        });
+    });
+
+    // 3) Toggle Sensor Status
+    $(document).on("click", ".sensor-toggle", function (e) {
+        e.preventDefault();
         const btn = $(this);
         const id = btn.attr("data-id");
-        // ALWAYS read the raw attribute and compare to lowercase "true"
-        const currentState = String(btn.attr("data-isactive")).toLowerCase() === "true";
-        const newState = !currentState;
-
-        console.log(`[Toggle] Sensor ${id}: ${currentState} → ${newState}`);
+        const current = String(btn.attr("data-isactive")).toLowerCase() === "true";
+        const newState = !current;
 
         $.ajax({
             url: "/Admin/ToggleSensorStatus",
             type: "POST",
             headers: { "RequestVerificationToken": getAntiForgeryToken() },
-            data: { id: id, isActive: newState },
+            data: { id, isActive: newState },
             success(resp) {
-                console.log("[Toggle] Response:", resp);
                 if (!resp.success) {
-                    alert(resp.message || "Error toggling sensor.");
-                    return;
+                    return alert(resp.message || "Error toggling sensor.");
                 }
-
-                // 1) Update the button attribute + text
-                btn
-                    .attr("data-isactive", String(resp.newIsActive))
+                btn.attr("data-isactive", String(resp.newIsActive))
                     .text(resp.newIsActive ? "Disable" : "Enable");
 
-                // 2) Update the badge classes & text
                 const badge = $("#status-" + id);
-                badge
-                    .removeClass("bg-success bg-danger")
+                badge.removeClass("bg-success bg-danger")
                     .addClass(resp.newIsActive ? "bg-success" : "bg-danger")
                     .text(resp.newIsActive ? "Active" : "Inactive");
 
-                // 3) Recount deactivated sensors from DOM
-                const totalDeactivated = $(".badge.bg-danger").length;
-                $("#deactivatedCount").text(totalDeactivated);
+                // Recount deactivated
+                $("#deactivatedCount").text($(".badge.bg-danger").length);
             },
             error(xhr) {
-                console.error("[Toggle] AJAX error:", xhr);
-                alert("Failed to toggle sensor. See console for details.");
+                console.error("Toggle error:", xhr);
+                alert("Failed to toggle sensor.");
             }
         });
     });
 
-    // Delete
-    $(document).on("click", ".sensor-delete", function () {
+    // 4) Delete Sensor with a single confirm
+    $(document).on("click", ".sensor-delete", function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();              // prevent any other click handlers
         const id = $(this).data("id");
+
         if (!confirm("⚠️ Permanently delete this sensor?")) return;
+
         $.ajax({
             url: "/Admin/DeleteSensor",
             type: "POST",
@@ -61,11 +78,24 @@ $(function () {
                 if (!resp.success) return alert(resp.message);
                 location.reload();
             },
-            error() { alert("Failed to delete sensor."); }
+            error() {
+                alert("Failed to delete sensor.");
+            }
         });
     });
 
-    // Edit Sensor Form
+    // 5) Open Threshold Settings modal
+    $(document).on("click", "#openThresholdSettings", function (e) {
+        e.preventDefault();
+        $.get('/Admin/AlertThresholdSettings', function (data) {
+            $("#alertThresholdSettingsContent").html(data);
+            $("#alertThresholdSettingsModal").modal('show');
+        }).fail(xhr => {
+            console.error("Error loading thresholds:", xhr.responseText);
+        });
+    });
+
+    // 6) Submit Edit Sensor Form
     $(document).on("submit", "#editSensorForm", function (e) {
         e.preventDefault();
         const form = $(this);
@@ -82,24 +112,25 @@ $(function () {
                     $("#editSensorContent").html(resp);
                 }
             },
-            error() { alert("Failed to update sensor."); }
+            error() {
+                alert("Failed to update sensor.");
+            }
         });
     });
 
-    // Alert Thresholds Form
+    // 7) Submit Threshold Settings Form
     $(document).on("submit", "#alertThresholdSettingsForm", function (e) {
         e.preventDefault();
-        const form = $(this), payload = [];
-        form.find(".threshold-setting").each(function () {
-            const block = $(this),
-                parameter = block.data("parameter"),
-                value = parseFloat(block.find(".threshold-value").val()),
-                isActive = block.find(".threshold-active").prop("checked");
-            payload.push({ Parameter: parameter, ThresholdValue: value, IsActive: isActive });
-        });
+        const payload = $(this).find(".threshold-setting").map(function () {
+            return {
+                Parameter: $(this).data("parameter"),
+                ThresholdValue: parseFloat($(this).find(".threshold-value").val()),
+                IsActive: $(this).find(".threshold-active").prop("checked")
+            };
+        }).get();
 
         $.ajax({
-            url: form.attr("action"),
+            url: $(this).attr("action"),
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify(payload),
@@ -112,7 +143,9 @@ $(function () {
                     alert(resp.message || "Error saving settings.");
                 }
             },
-            error() { alert("Failed to save thresholds."); }
+            error() {
+                alert("Failed to save thresholds.");
+            }
         });
     });
 });
