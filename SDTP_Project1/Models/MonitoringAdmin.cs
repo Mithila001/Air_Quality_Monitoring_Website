@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
+
+// I dont think this file is used anywhere in the project
 public class MonitoringAdmin
 {
     [Key]

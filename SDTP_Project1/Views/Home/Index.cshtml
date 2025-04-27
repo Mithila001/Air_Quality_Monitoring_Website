@@ -11,25 +11,49 @@
 <div class="container-fluid h-100">
     <div class="row h-100">
         <div class="col-md-auto p-0" style="width: 400px;">
-            <!-- Left Column: Cards container -->
-            <div class="col-md-auto p-0" style="width: 400px;">
-                <div class="bg-light overflow-auto p-3 border-end" style="max-height: 80vh;">
+            <div class="bg-light overflow-auto p-3 border-end d-flex flex-column" style="max-height: 90vh;">
+                <h5 class="mb-3"><i class="bi bi-list-ul me-2"></i> Sensor List</h5>
+                @if (orderedSensors != null && orderedSensors.Any())
+                {
                     @foreach (var sensor in orderedSensors)
                     {
-                        <div class="card mb-3 shadow-sm border">
+                        <div class="card mb-3 shadow-sm border-0">
                             <div class="card-body">
-                                <h5 class="card-title">@sensor.City</h5> <p class="card-text mb-1"> <strong>Latest AQI:</strong> @sensor.LatestAQI </p>
-                                <p class="card-text">
-                                    <small class="text-muted"> <strong>Total Readings:</strong> @sensor.Readings.Count </small>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                                    <h6 class="card-title mb-0">@sensor.City</h6>
+                                </div>
+                                <p class="card-text mb-1">
+                                    <span class="fw-bold">Latest AQI:</span>
+                                    <span class="@(sensor.LatestAQI > 50 ? "text-danger" : "text-success")">@sensor.LatestAQI</span>
                                 </p>
+                                <p class="card-text mb-0">
+                                    <small class="text-muted">
+                                        <i class="bi bi-activity me-1"></i>
+                                        <span class="fw-bold">Total Readings:</span> @sensor.Readings.Count
+                                    </small>
+                                </p>
+                                <div class="d-grid mt-2">
+                                    <button class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-eye-fill me-1"></i> View Details
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     }
+                }
+                else
+                {
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle-fill me-2"></i> No sensors available.
+                    </div>
+                }
+                <div class="mt-auto">
                 </div>
             </div>
         </div>
         <div class="col vw-100 vh-100">
-            <div  id="map" style="width:100%; height:100%;"></div>
+            <div id="map" style="width:100%; height:100%;"></div>
         </div>
     </div>
 </div>

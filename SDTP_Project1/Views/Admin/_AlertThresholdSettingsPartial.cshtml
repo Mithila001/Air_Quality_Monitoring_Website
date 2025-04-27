@@ -1,35 +1,37 @@
 ﻿@model IEnumerable<SDTP_Project1.Models.AlertThresholdSetting>
 
-<div class="modal-header">
-    <h5 class="modal-title">Alert Threshold Settings</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="modal-header bg-light">
+    <h5 class="modal-title"><i class="bi bi-sliders me-2"></i> Alert Threshold Settings</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 <div class="modal-body">
     <form id="alertThresholdSettingsForm"
           asp-action="UpdateAlertThresholds"
           asp-controller="Admin"
           method="post">
-        @Html.AntiForgeryToken()   <!-- ★ CSRF token added -->
-        @if (Model != null && Model.Any())
+        @Html.AntiForgeryToken() @if (Model != null && Model.Any())
         {
             @foreach (var setting in Model)
             {
-                <div class="mb-3 threshold-setting" data-parameter="@setting.Parameter">
-                    <label class="form-label">
-                        Threshold Value for @setting.Parameter
-                    </label>
-                    <input type="number"
-                           class="form-control threshold-value"
-                           asp-for="@setting.ThresholdValue" />
-                    <span asp-validation-for="@setting.ThresholdValue"
-                          class="text-danger"></span>
+                <div class="mb-3 border rounded p-3 threshold-setting" data-parameter="@setting.Parameter">
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-gear-fill text-muted me-1"></i> Threshold Value for @setting.Parameter
+                        </label>
+                        <input type="number"
+                               class="form-control threshold-value"
+                               asp-for="@setting.ThresholdValue" />
+                        <span asp-validation-for="@setting.ThresholdValue"
+                              class="text-danger small"></span>
+                    </div>
 
                     <div class="form-check mt-2">
                         <input type="checkbox"
                                class="form-check-input threshold-active"
-                               asp-for="@setting.IsActive" />
-                        <label class="form-check-label">
-                            Enable Alerts for @setting.Parameter
+                               asp-for="@setting.IsActive"
+                               id="isActive_@setting.Parameter" />
+                        <label class="form-check-label" for="isActive_@setting.Parameter">
+                            <i class="bi bi-bell-fill text-warning me-1"></i> Enable Alerts for @setting.Parameter
                         </label>
                     </div>
                 </div>
@@ -37,15 +39,19 @@
         }
         else
         {
-            <p>No alert threshold settings found.</p>
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle-fill me-2"></i> No alert threshold settings found.
+            </div>
         }
 
-        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i> Save Changes</button>
+        </div>
     </form>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary"
             data-bs-dismiss="modal">
-        Close
+        <i class="bi bi-x-octagon me-2"></i> Close
     </button>
 </div>

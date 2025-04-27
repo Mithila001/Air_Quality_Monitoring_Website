@@ -5,6 +5,7 @@
     <title>@ViewData["Title"] - Air Quality Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/bootstrap_colors.css" />
     <link rel="stylesheet" href="~/css/bootstrap_layouts.css" />
     @* <link rel="stylesheet" href="~/css/home.css" /> *@
@@ -45,6 +46,8 @@
     @* </style> *@
 </head>
 <body class="bg-custom-gray-light min-vh-100 min-vw-100 d-flex flex-column">
+    <div id="notification-area" class="position-fixed top-0 end-0 p-3" style="z-index: 1100">
+    </div>
 
     <header class="bg-custom-dark text-custom-light shadow">
         <nav class="navbar navbar-expand-lg navbar-dark">
@@ -68,23 +71,23 @@
                                 Dashboard
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active bg-secondary rounded" : "")" href="@Url.Action("Index", "Admin")">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                Admin
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link d-flex align-items-center @(ViewContext.RouteData.Values["Controller"].ToString() == "SystemAdmin" ? "active bg-secondary rounded" : "")" href="@Url.Action("Index", "SystemAdmin")">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354l-2 2m0 0l-2-2m2 2l2 2m-2-2l-2-2m2 2l2 2m-2-2l-2-2M12 15.646l-2-2m0 0l-2 2m2-2l2-2m-2 2l2 2m-2-2l2-2m-2-2v-2a2 2 0 012-2h6a2 2 0 012 2v2h.01l.01-.01c1.032.072 2.03.695 2.953 1.727A12 12 0 0012 15.646z" />
-                                </svg>
-                                System Admin
-                            </a>
-                        </li>
+                        @* <li class="nav-item"> *@
+                        @*     <a class="nav-link d-flex align-items-center @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active bg-secondary rounded" : "")" href="@Url.Action("Index", "Admin")"> *@
+                        @*         <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"> *@
+                        @*             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> *@
+                        @*             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /> *@
+                        @*         </svg> *@
+                        @*         Admin *@
+                        @*     </a> *@
+                        @* </li> *@
+                        @* <li class="nav-item"> *@
+                        @*     <a class="nav-link d-flex align-items-center @(ViewContext.RouteData.Values["Controller"].ToString() == "SystemAdmin" ? "active bg-secondary rounded" : "")" href="@Url.Action("Index", "SystemAdmin")"> *@
+                        @*         <svg xmlns="http://www.w3.org/2000/svg" class="me-2" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"> *@
+                        @*             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354l-2 2m0 0l-2-2m2 2l2 2m-2-2l-2-2m2 2l2 2m-2-2l-2-2M12 15.646l-2-2m0 0l-2 2m2-2l2-2m-2 2l2 2m-2-2l2-2m-2-2v-2a2 2 0 012-2h6a2 2 0 012 2v2h.01l.01-.01c1.032.072 2.03.695 2.953 1.727A12 12 0 0012 15.646z" /> *@
+                        @*         </svg> *@
+                        @*         System Admin *@
+                        @*     </a> *@
+                        @* </li> *@
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -137,10 +140,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.12/dist/jquery.validate.unobtrusive.min.js"></script>
-    <script src="~/js/admin.js"></script>
+    @* <script src="~/js/admin.js"></script> *@
     <script src="~/js/devtools.js"></script>
     <script src="~/js/form-validation.js"></script>
-    <script src="~/js/admin.js?v=@DateTime.Now.Ticks"></script>
+    <script src="~/js/site.js"></script>
+    @* <script src="~/js/admin.js?v=@DateTime.Now.Ticks"></script> *@
 
 
 

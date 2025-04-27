@@ -5,6 +5,7 @@ using SDTP_Project1.Services;
 using SDTP_Project1.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using SDTP_Project1.Hubs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,9 @@ builder.Services.AddScoped<ISensorService, SensorService>();
 var initialDevMode = builder.Configuration.GetSection("DevModeOptions").Get<DevModeOptions>()?.Enabled ?? false;
 // Register runtime dev-mode state
 builder.Services.AddSingleton(new DevModeState { Enabled = initialDevMode });
+
+// SignalR Service
+builder.Services.AddSignalR();
 
 // Register the hosted background simulation service
 builder.Services.AddHostedService<SensorDataSimulationService>();
@@ -82,7 +86,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-
+app.MapHub<AirQualityHub>("/airQualityHub");
 
 //var hasher = new PasswordHasher<AdminUser>();
 //var hash = hasher.HashPassword(null, "1234");

@@ -23,6 +23,7 @@ $(function () {
             $("#editSensorModal").modal('show');
         }).fail(xhr => {
             console.error("Error loading sensor form:", xhr.responseText);
+            showNotification("Failed to load sensor form.", 'danger');
         });
     });
 
@@ -56,7 +57,8 @@ $(function () {
             },
             error(xhr) {
                 console.error("Toggle error:", xhr);
-                alert("Failed to toggle sensor.");
+                showNotification("Failed to toggle sensor.", 'danger');
+
             }
         });
     });
@@ -79,7 +81,7 @@ $(function () {
                 location.reload();
             },
             error() {
-                alert("Failed to delete sensor.");
+                showNotification("Failed to delete sensor.", 'danger');
             }
         });
     });
@@ -92,6 +94,7 @@ $(function () {
             $("#alertThresholdSettingsModal").modal('show');
         }).fail(xhr => {
             console.error("Error loading thresholds:", xhr.responseText);
+            showNotification("Failed to load threshold settings.", 'danger');
         });
     });
 
@@ -113,7 +116,7 @@ $(function () {
                 }
             },
             error() {
-                alert("Failed to update sensor.");
+                showNotification("Failed to update sensor.", 'danger');
             }
         });
     });
@@ -140,12 +143,51 @@ $(function () {
                     $("#alertThresholdSettingsModal").modal("hide");
                     location.reload();
                 } else {
-                    alert(resp.message || "Error saving settings.");
+                    showNotification(resp.message || "Error saving settings.", 'warning');
                 }
             },
             error() {
-                alert("Failed to save thresholds.");
+                showNotification("Failed to save thresholds.", 'danger');
             }
         });
+    });
+
+    // 8) Real-time alerts via SignalR
+    // ──────────────────────────────────
+    // Ensure signalr.js is loaded first!
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/airQualityHub")
+        .build();
+
+    connection.on("ReceiveAlerts", function (alerts) {
+        console.log("👂 Received alerts payload:", alerts);
+        alerts.forEach(function (a) {
+            const $card = $('<div>').addClass('card mb-2 shadow-sm border-0').append(
+                $('<div>').addClass('card-body p-3').append(
+                    $('<h6>')
+                        .addClass('card-title mb-2 text-truncate')
+                        .html(`<i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> Sensor ${a.sensorId} breached ${a.parameter}`),
+                    $('<p>')
+                        .addClass('card-text mb-2 small')
+                        .html(`Value: <span class="fw-bold text-primary">${a.currentValue}</span> <i class="bi bi-arrow-right me-1 ms-1"></i> Threshold: <span class="fw-bold text-danger">${a.thresholdValue}</span>`),
+                    $('<div>').addClass('d-flex justify-content-between align-items-center').append(
+                        $('<small>')
+                            .addClass('text-muted')
+                            .html(`<i class="bi bi-clock me-1"></i> ${new Date(a.timestamp).toLocaleTimeString()}`),
+                        $('<span>')
+                            .addClass('badge rounded-pill')
+                            .addClass(a.currentValue >= a.thresholdValue ? 'bg-danger' : 'bg-success')
+                            .text(a.currentValue >= a.thresholdValue ? 'Breached' : 'Normal')
+                    )
+                )
+            );
+            $('#alertsContainer').prepend($card);
+        });
+    });
+
+    connection.start()
+        .catch(function (err) {
+            console.error("SignalR connection error:", err.toString());
+            showNotification("Failed to connect to real-time updates. Some data may not be live.", 'warning', 10000); // Longer duration
     });
 });
