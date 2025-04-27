@@ -1,78 +1,59 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using SDTP_Project1;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SDTP_Project1.Data;
-using System;
-using System.Data.Common;
-using Microsoft.Data.Sqlite;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore.InMemory;
 
 namespace AQISystemIntegration.Tests.TestSetup
 {
     public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram> where TProgram : class
     {
-        private readonly DbConnection _connection;
-
-        public CustomWebApplicationFactory()
-        {
-            // Create and open one single connection that stays alive for all tests
-            _connection = new SqliteConnection("DataSource=:memory:");
-            _connection.Open();
-        }
-
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
-            base.ConfigureWebHost(builder);
-
+            builder.UseEnvironment("Testing");
             builder.ConfigureServices(services =>
             {
-                // Remove existing DbContext and DbConnection registrations
+                // 1. Find and remove existing DbContext registration
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<AirQualityDbContext>));
+
                 if (descriptor != null)
                 {
                     services.Remove(descriptor);
                 }
 
-                var dbContextDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbConnection));
-                if (dbContextDescriptor != null)
+                // 2. ALSO REMOVE AirQualityDbContext itself if directly registered
+                var contextDescriptor = services.SingleOrDefault(
+                    d => d.ServiceType == typeof(AirQualityDbContext));
+
+                if (contextDescriptor != null)
                 {
-                    services.Remove(dbContextDescriptor);
+                    services.Remove(contextDescriptor);
                 }
 
-                // Always reuse the same opened connection
-                services.AddSingleton<DbConnection>(_connection);
-
-                services.AddDbContext<AirQualityDbContext>((container, options) =>
+                // 3. Now add the InMemory database
+                services.AddDbContext<AirQualityDbContext>(options =>
                 {
-                    var connection = container.GetRequiredService<DbConnection>();
-                    options.UseSqlite(connection);
+                    options.UseInMemoryDatabase("InMemoryAirQualityTestDb");
                 });
 
-                // Build service provider and create tables
+                // 4. Fake authentication
+                services.AddAuthentication("TestScheme")
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                        "TestScheme", options => { });
+
+                // 5. Build service provider
                 var sp = services.BuildServiceProvider();
-                using (var scope = sp.CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<AirQualityDbContext>();
-                    db.Database.EnsureCreated();
-                }
+
+                using var scope = sp.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<AirQualityDbContext>();
+                db.Database.EnsureCreated();
             });
-
-            builder.UseEnvironment("Testing");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
 
-            if (disposing)
-            {
-                // Close and dispose the connection at the end
-                _connection.Dispose();
-            }
-        }
     }
 }

@@ -13,7 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Register the DB context with DI
-if (!builder.Environment.IsEnvironment("Testing"))
+if (builder.Environment.IsEnvironment("Testing"))
+{
+    // Don't register DB here the Test Factory will register InMemory
+}
+else
 {
     builder.Services.AddDbContext<AirQualityDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
