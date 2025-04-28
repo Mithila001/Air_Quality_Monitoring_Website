@@ -7,7 +7,7 @@
 <table class="table table-sm table-striped mb-0">
     <thead class="table-light">
         <tr>
-            <th>Timestamp</th>
+            <th>Date</th>
             <th>AQI</th>
             <th>PM2.5</th>
             <th>PM10</th>
@@ -20,32 +20,34 @@
     <tbody>
         @foreach (var r in Model)  // assumes Model is pre-sorted by Timestamp descending
         {
-            // **Date separator**
-            var dateOnly = r.Timestamp.Date;
+            // Convert UTC to local for grouping
+            var localTs = r.Timestamp.ToLocalTime();
+            var dateOnly = localTs.Date;
+
+            // Date separator row
             if (lastDate == null || dateOnly != lastDate)
             {
                 <tr class="table-secondary">
                     <td colspan="8" class="fw-bold">
                         @dateOnly.ToString("yyyy-MM-dd")
                     </td>
-                </tr>
-                ;
+                </tr>;
                 lastDate = dateOnly;
             }
 
-            // **Compute AQI CSS class inline (no extra @{…})**
+            // Compute AQI badge class
             string aqiClass;
             var n = r.AQI ?? -1;
-            if (n < 0) aqiClass = "aqi-bg-secondary";
-            else if (n <= 50) aqiClass = "aqi-bg-success";
-            else if (n <= 100) aqiClass = "aqi-bg-warning text-dark";
-            else if (n <= 150) aqiClass = "aqi-bg-orange";
-            else if (n <= 200) aqiClass = "aqi-bg-danger";
-            else if (n <= 300) aqiClass = "aqi-bg-purple";
-            else aqiClass = "aqi-bg-maroon";
+            if (n < 0)                   aqiClass = "aqi-bg-secondary";
+            else if (n <= 50)            aqiClass = "aqi-bg-success";
+            else if (n <= 100)           aqiClass = "aqi-bg-warning text-dark";
+            else if (n <= 150)           aqiClass = "aqi-bg-orange";
+            else if (n <= 200)           aqiClass = "aqi-bg-danger";
+            else if (n <= 300)           aqiClass = "aqi-bg-purple";
+            else                         aqiClass = "aqi-bg-maroon";
 
             <tr>
-                <td>@r.Timestamp.ToString("yyyy-MM-dd h:mm:ss tt")</td>
+                <td>@localTs.ToString("yyyy-MM-dd h:mm:ss tt")</td>
                 <td>
                     <span class="badge @aqiClass">
                         @r.AQI
@@ -61,3 +63,4 @@
         }
     </tbody>
 </table>
+
