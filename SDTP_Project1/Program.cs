@@ -14,8 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Register the DB context with DI
-builder.Services.AddDbContext<AirQualityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<AirQualityDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
 
 // Dependency Injection: Register repositories.
 builder.Services.AddScoped<ISensorRepository, SensorRepository>();
@@ -93,5 +96,6 @@ app.MapHub<AirQualityHub>("/airQualityHub");
 
 app.Run();
 
+public partial class Program { } // For integration tests
 
 

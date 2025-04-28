@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SDTP_Project1.Controllers
 {
-    [Authorize(Roles = "System Admin")] // Fix: Uncommented authorization
+    [Authorize(Roles = "System Admin")]
     public class SystemAdminController : Controller
     {
         private readonly ISystemAdminRepository _systemAdminRepository;
@@ -56,6 +56,7 @@ namespace SDTP_Project1.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditAdmin(
@@ -68,7 +69,7 @@ namespace SDTP_Project1.Controllers
                 return NotFound();
 
             // 2) Bind only these properties via expression lambdas:
-            var bindResult = await TryUpdateModelAsync(
+            if (!await TryUpdateModelAsync(
                 existingUser,
                 prefix: string.Empty,
                 u => u.Name,
@@ -77,10 +78,7 @@ namespace SDTP_Project1.Controllers
                 u => u.IsActive,
                 u => u.Gender,
                 u => u.Age,
-                u => u.UserRole
-            );
-
-            if (!bindResult)
+                u => u.UserRole))
             {
                 // Validation failed on one of those properties
                 TempData["ErrorMessage"] = "Please correct the validation errors.";
@@ -109,7 +107,6 @@ namespace SDTP_Project1.Controllers
             return RedirectToAction("Index");
         }
 
-
         [HttpGet]
         public async Task<IActionResult> DeleteAdmin(int id)
         {
@@ -123,11 +120,11 @@ namespace SDTP_Project1.Controllers
                 var admin = await _systemAdminRepository.GetByIdAsync(id);
                 if (admin == null)
                 {
-                    return NotFound();
+                    return NotFound(); // This needs to return NotFound to match test expectations
                 }
 
                 // Prevent deleting self
-                var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var currentUserId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 if (currentUserId != null && currentUserId == id.ToString())
                 {
                     TempData["ErrorMessage"] = "You cannot delete your own account";
@@ -204,6 +201,16 @@ namespace SDTP_Project1.Controllers
         }
 
 
+
+
+                public virtual new Task<bool> TryUpdateModelAsync<TModel>(
+                    TModel model,
+                    string prefix,
+                    params System.Linq.Expressions.Expression<Func<TModel, object>>[] includeExpressions)
+                    where TModel : class
+                {
+                    return base.TryUpdateModelAsync(model, prefix, includeExpressions);
+                }
 
     }
 }
