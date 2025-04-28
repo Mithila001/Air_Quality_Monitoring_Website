@@ -1,6 +1,4 @@
-﻿// SystemAdminControllerTests.cs - FIXED
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -165,18 +163,17 @@ namespace AQISystemUnit.Tests.Controllers
         }
 
         [Fact]
-        public async Task AddAdmin_EmailAlreadyExists_ShouldReturnPartialView()
+        public async Task AddAdmin_NameAlreadyExists_ShouldReturnPartialView()
         {
             // Arrange
             var newAdmin = new AdminUser
             {
                 Name = "Test",
-                Email = "test@example.com",
                 Gender = "Male",
                 UserRole = "User Admin",
                 PasswordHash = "test"
             };
-            var existingUsers = new List<AdminUser> { new AdminUser { Email = "test@example.com" } };
+            var existingUsers = new List<AdminUser> { new AdminUser { Name = "Test" } };
 
             _mockAdminRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(existingUsers);
 
