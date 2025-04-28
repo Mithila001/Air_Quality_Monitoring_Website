@@ -34,9 +34,13 @@
                                     </small>
                                 </p>
                                 <div class="d-grid mt-2">
-                                    <button class="btn btn-outline-secondary btn-sm">
+                                    <button class="btn btn-outline-secondary btn-sm view-details-btn"
+                                            data-sensor-id="@sensor.SensorID"
+                                            data-sensor-city="@sensor.City">
                                         <i class="bi bi-eye-fill me-1"></i> View Details
                                     </button>
+
+
                                 </div>
                             </div>
                         </div>
@@ -57,6 +61,28 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for displaying sensor details -->
+<div class="modal fade" id="sensorDetailsModal" tabindex="-1"
+     aria-labelledby="sensorDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- we’ll overwrite this in JS -->
+                <h5 class="modal-title" id="sensorDetailsLabel">
+                    Sensor Readings
+                </h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- AJAX-loaded table goes here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 @section Scripts {
     <!-- Leaflet CSS -->
