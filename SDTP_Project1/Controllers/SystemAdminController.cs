@@ -151,42 +151,46 @@ namespace SDTP_Project1.Controllers
         public async Task<IActionResult> AddAdmin(AdminUser adminUser)
         {
             if (adminUser == null)
-            {
                 return BadRequest("Invalid admin data");
-            }
 
-            // override the automatic validation on PasswordHash
+            // REMOVE email & password-hash from ModelState so IsValid passes
+            ModelState.Remove(nameof(AdminUser.Email));
             ModelState.Remove(nameof(AdminUser.PasswordHash));
 
             if (!ModelState.IsValid)
-            {
-                return PartialView("_addNewAdmin", adminUser); // Re-render modal with validation
-            }
+                return PartialView("_addNewAdmin", adminUser);
 
             try
             {
-                // Check if email already exists
-                var existingUsers = await _systemAdminRepository.GetAllAsync();
-                if (existingUsers.Any(u => u.Email == adminUser.Email))
+                // 1) Prevent duplicate names
+                var all = await _systemAdminRepository.GetAllAsync();
+                if (all.Any(u => u.Name == adminUser.Name))
                 {
-                    ModelState.AddModelError("Email", "This email is already in use");
+                    ModelState.AddModelError("Name", "An admin with this name already exists.");
                     return PartialView("_addNewAdmin", adminUser);
                 }
 
+                // 2) Build plain-text password
+                var randomTwo = Path.GetRandomFileName().Replace(".", "").Substring(0, 2);
+                var dayString = DateTime.Now.Day.ToString("D2");
+                var plainPwd = $"{adminUser.Name}{randomTwo}{dayString}";
+
+                // 3) Build dummy email
+                var rand = new Random();
+                var randomThree = rand.Next(100, 1000);
+                var generatedEmail = $"{adminUser.Name}{randomThree}@gmail.com";
+
+                // 4) Assign generated values
+                adminUser.PasswordHash = _hasher.HashPassword(adminUser, plainPwd);
+                adminUser.Email = generatedEmail;
                 adminUser.RegisterDate = DateTime.Now;
                 adminUser.IsActive = true;
 
-                // —— Generate one-time password
-                var randomTwo = Path.GetRandomFileName().Replace(".", "").Substring(0, 2);
-                var dayString = DateTime.Now.Day.ToString("D2");   // e.g. "05"
-                var plainPwd = $"{adminUser.Name}{randomTwo}{dayString}";
-
-                // —— Hash & store
-                adminUser.PasswordHash = _hasher.HashPassword(adminUser, plainPwd);
-
+                // 5) Save
                 await _systemAdminRepository.AddAsync(adminUser);
 
-                // —— Expose plain text just once
+                // 6) Surface once via TempData
+                TempData["NewAdminEmail"] = generatedEmail;
                 TempData["NewAdminPassword"] = plainPwd;
                 TempData["SuccessMessage"] = "Admin added successfully";
 
@@ -194,10 +198,12 @@ namespace SDTP_Project1.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception
                 ModelState.AddModelError("", "Error adding admin: " + ex.Message);
                 return PartialView("_addNewAdmin", adminUser);
             }
         }
+
+
+
     }
 }

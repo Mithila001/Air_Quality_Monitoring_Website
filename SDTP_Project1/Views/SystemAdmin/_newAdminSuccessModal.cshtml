@@ -1,0 +1,42 @@
+﻿@{
+    var pwd = TempData["NewAdminPassword"] as string;
+    var email = TempData["NewAdminEmail"] as string;
+}
+@if (!string.IsNullOrEmpty(pwd) && !string.IsNullOrEmpty(email))
+{
+    <div class="modal fade" id="newAdminSuccessModal" tabindex="-1" aria-labelledby="newAdminSuccessLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-success">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="newAdminSuccessLabel">Admin Created</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email</label>
+                        <div class="input-group">
+                            <input type="text" id="newAdminEmail" class="form-control" readonly value="@email" />
+                            <button class="btn btn-outline-light" type="button"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('newAdminEmail').value)">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Password</label>
+                        <div class="input-group">
+                            <input type="text" id="newAdminPassword" class="form-control" readonly value="@pwd" />
+                            <button class="btn btn-outline-light" type="button"
+                                    onclick="navigator.clipboard.writeText(document.getElementById('newAdminPassword').value)">
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
