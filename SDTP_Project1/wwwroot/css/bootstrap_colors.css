@@ -26,4 +26,38 @@ body {
 
 .bg-gradient-custom {
     background-image: linear-gradient(to right, #3b82f6, #1d4ed8);
-}}
+}
+
+
+.aqi-bg-purple {
+    background-color: #8f3f97 !important;
+}
+
+.aqi-bg-maroon {
+    background-color: #7e0023 !important;
+}
+
+.aqi-bg-success {
+    background-color: #00e400 !important;
+}
+
+.aqi-bg-warning {
+    background-color: #ffff00 !important;
+}
+
+.aqi-bg-danger {
+    background-color: #ff0000 !important;
+}
+
+.aqi-bg-secondary {
+    background-color: #999999 !important;
+}
+
+.text-dark { /* added to ensure text is black on yellow bg */
+    color: #000000 !important;
+}
+
+.aqi-bg-orange {
+    background-color: #ff7e00 !important;
+}
+

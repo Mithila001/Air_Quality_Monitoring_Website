@@ -1,121 +1,87 @@
 ﻿@model IEnumerable<SDTP_Project1.Models.AdminUser>
-
-<partial name="_addNewAdmin" model="new SDTP_Project1.Models.AdminUser()" />
-
 @{
-    ViewData["Title"] = "System Admin";
+    ViewData["Title"] = "System Administration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
+<partial name="_addNewAdmin" model="new SDTP_Project1.Models.AdminUser()" />
 
 <h1 class="mb-4">System Administration</h1>
 
 <div class="container-fluid px-4">
-    <div class="row mb-4">
-        <div class="col-12 mb-4">
-            <div class="row">
 
-                <!-- Total User Accounts -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalUserAccounts
-                            </p>
-                            <h5 class="text-muted">Total User Accounts</h5>
-                        </div>
-                    </div>
-                </div>
+    <!-- ─── Dashboard Cards: Single horizontal row ─── -->
+    <div class="d-flex flex-row flex-nowrap overflow-auto mb-4">
+        <div class="card bg-primary text-white shadow-lg rounded-4 flex-shrink-0 me-3" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-people-fill fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalUserAccounts</h2>
+                <p class="mb-0">Total User Accounts</p>
+            </div>
+        </div>
 
-                <!-- Total User Admins -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalUserAdmins
-                            </p>
-                            <h5 class="text-muted">Total User Admins</h5>
-                        </div>
-                    </div>
-                </div>
+        <div class="card bg-success text-white shadow-lg rounded-4 flex-shrink-0 me-3" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-person-badge-fill fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalUserAdmins</h2>
+                <p class="mb-0">Total User Admins</p>
+            </div>
+        </div>
 
-                <!-- Total System Admins -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalSystemAdmins
-                            </p>
-                            <h5 class="text-muted">Total System Admins</h5>
-                        </div>
-                    </div>
-                </div>
+        <div class="card bg-warning text-black shadow-lg rounded-4 flex-shrink-0 me-3" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-shield-lock-fill fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalSystemAdmins</h2>
+                <p class="mb-0">Total System Admins</p>
+            </div>
+        </div>
 
-                <!-- Total Active Admins -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalActiveAdmins
-                            </p>
-                            <h5 class="text-muted">Total Active Admins</h5>
-                        </div>
-                    </div>
-                </div>
+        <div class="card bg-info text-white shadow-lg rounded-4 flex-shrink-0 me-3" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-person-check-fill fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalActiveAdmins</h2>
+                <p class="mb-0">Total Active Admins</p>
+            </div>
+        </div>
 
-                <!-- Total Deactive Admins -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalDeactiveAdmins
-                            </p>
-                            <h5 class="text-muted">Total Deactive Admins</h5>
-                        </div>
-                    </div>
-                </div>
+        <div class="card bg-danger text-white shadow-lg rounded-4 flex-shrink-0 me-3" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-person-x-fill fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalDeactiveAdmins</h2>
+                <p class="mb-0">Total Inactive Admins</p>
+            </div>
+        </div>
 
-                <!-- Total Active Sensors -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalActiveSensors
-                            </p>
-                            <h5 class="text-muted">Total Active Sensors</h5>
-                        </div>
-                    </div>
-                </div>
+        <div class="card bg-secondary text-white shadow-lg rounded-4 flex-shrink-0 me-3" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-wifi fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalActiveSensors</h2>
+                <p class="mb-0">Total Active Sensors</p>
+            </div>
+        </div>
 
-                <!-- Total Deactivated Sensors -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-lg rounded-4">
-                        <div class="card-body text-center">
-                            <p class="h1 mb-0" style="font-weight:bold;font-size:2.5rem;">
-                                @ViewBag.TotalDeactivatedSensors
-                            </p>
-                            <h5 class="text-muted">Total Deactivated Sensors</h5>
-                        </div>
-                    </div>
-                </div>
-
+        <div class="card bg-dark text-white shadow-lg rounded-4 flex-shrink-0" style="min-width: 14rem;">
+            <div class="card-body text-center">
+                <i class="bi bi-wifi-off fs-1 mb-2"></i>
+                <h2 class="fw-bold">@ViewBag.TotalDeactivatedSensors</h2>
+                <p class="mb-0">Total Deactivated Sensors</p>
             </div>
         </div>
     </div>
-</div>
 
+    <hr class="my-4" />
 
-
-<div class="container-fluid px-4">
-    <hr class="my-4">
-    <div class="w-100 d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 ms-3">Admin Users</h2>
-        <button class="btn btn-primary rounded-pill btn-lg me-3" data-bs-toggle="modal" data-bs-target="#addAdminModal">
-            <i class="bi bi-person-plus-fill me-2"></i> Register an Admin
+    <!-- ─── Admin Users Header & Button ─── -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Admin Users</h2>
+        <button class="btn btn-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#addAdminModal">
+            <i class="bi bi-person-plus-fill me-1"></i> Register an Admin
         </button>
     </div>
-    <hr class="my-4">
 
+    <hr class="my-4" />
+
+    <!-- ─── Admin Users List: full-width rows ─── -->
     <div class="row">
         @foreach (var user in Model)
         {
@@ -163,17 +129,22 @@
                                 <div class="btn-group" style="width: 80%;">
                                     <button type="button"
                                             class="btn btn-outline-primary rounded-pill btn-md d-flex justify-content-center align-items-center"
-                                            style=" height: 100%;" data-bs-toggle="modal"
+                                            style="height: 100%;"
+                                            data-bs-toggle="modal"
                                             data-bs-target="#editAdminModal-@user.Id">
                                         <i class="bi bi-pencil-square me-2"></i> Edit
                                     </button>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
+
+            @* Edit Modal Partial *@
             @await Html.PartialAsync("_EditAdminUserModal", user)
         }
     </div>
+
 </div>

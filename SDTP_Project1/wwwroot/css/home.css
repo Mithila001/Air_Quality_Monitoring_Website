@@ -1,184 +1,64 @@
-﻿/* Basic reset and font */
-/*html, body {
-    height: 100%;
-    width:100%;
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}*/
-
-
-/*html, body {
-    height: 100%;
-    margin: 0;
-}*/
-
-/*  --------- Header styling --------- */
-/*.custom-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-    background-color: #1e1e2f;
-    border-bottom: 1px solid #0d0d1a;
-    color: #fff;
+﻿/* 1) Remove default DivIcon background */
+.leaflet-div-icon {
+    background: transparent !important;
+    border: none !important;
 }
 
-.header-left,
-.header-right {
-    display: flex;
-    align-items: center;
-}
-
-.header-icon {
-    height: 60px;
-    width:  60px;
-    margin-right: 20px;
-}*/
-
-/* Buttons */
-/*.btn {
-    background-color: #3f51b5;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
+/* 2) Improved SVG pin styling */
+.aqi-pin-svg {
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.4));
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    margin-right: 20px;
-    height: 40px;
+    transition: transform 0.2s ease;
 }
 
-    .btn:hover,
-    .btn:focus {
-        background-color: #303f9f;
-        transform: translateY(-1px);
-    }*/
+    .aqi-pin-svg:hover {
+        transform: scale(1.15);
+    }
 
-/* Search Bar Section */
-/*.search-group {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 30px;
+    /* 3) Smooth the SVG path edges */
+    .aqi-pin-svg path {
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+/* override Leaflet's div-icon default */
+.custom-aqi-div-icon.leaflet-div-icon {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    /* ensure no padding/margin if any */
+    padding: 0;
+    margin: 0;
+}
+
+/* Custom Leaflet popup styling */
+.custom-popup .leaflet-popup-content-wrapper {
+    padding: 0;
     overflow: hidden;
-    background-color: #f8f9fa;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid #ced4da;
-}
-
-.search-bar {
+    background: transparent;
     border: none;
-    padding: 14px 22px;
-    font-size: 16px;
-    width: 300px;
-    outline: none;
-    flex-grow: 1;
-    border-right: 1px solid #ced4da;
-    background-color: transparent;
+    box-shadow: none;
 }
 
-.search-btn {
-    background-color: #f9f9f9;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+.custom-popup .leaflet-popup-content {
+    margin: 0;
+    width: 340px !important;
 }
 
-    .search-btn:hover,
-    .search-btn:focus {
-        background-color: #e5e5e5;
-        transform: scale(1.05);
-    }
-    .search-btn:active {
-        transform: scale(0.95);
-    }
-
-.search-icon {
-    height: 30px;
-    width: 30px;
-    border-radius: 100%;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+.custom-popup .leaflet-popup-tip {
+    background: #f8fafc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-    .search-icon:hover {
-        transform: scale(1.1);
-    }
 
-.contribute-btn {
-    margin-right: 20px;
-}
 
-.user-icon {
-    height: 45px;
-    width: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-    .user-icon:hover {
-        transform: scale(1.1);
-    }*/
-
-/* Main content: full available space below header */
-/*main {
-    height: calc(100vh - 75px);*/ /* Adjusted for header height */
-    /*overflow: hidden;
-}*/
-
-/* Two-column layout for main content */
-/*.main-content {
-    display: grid;
-    grid-template-columns: 400px auto;
-    height: 100%;
-}*/
-
-/* Left column: Cards container */
-/*.cards-container {
-    background-color: #f8f9fa;
+/* Keep modal body from growing beyond viewport */
+#sensorDetailsModal .modal-body {
+    max-height: 60vh;
     overflow-y: auto;
-    padding: 15px;
-    border-right: 1px solid #ddd;
-}*/
-
-/* Improved Card Styling with extra spacing */
-/*.card {
-    background: #ffffff;
-    margin-bottom: 30px;*/ /* doubled space */
-    /*padding: 15px;
-    font-size: 0.9rem;
-    text-align: left;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-    .card h5 {
-        margin-top: 0;
-        margin-bottom: 10px;
-        font-size: 1.1rem;
-        color: #333;
-    }
-
-    .card p {
-        margin: 5px 0;
-        color: #555;
-    }
-
-    .card:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    }*/
-
-/* Right column: Map container */
-/*#map {
-    height: 100%;
-    width: 100%;
-}*/
-
-
-
+/* Ensure badge text is legible */
+#sensorDetailsModal .badge {
+    font-size: 0.9em;
+}

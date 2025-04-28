@@ -11,6 +11,9 @@ namespace SDTP_Project1.Services
     public interface ISensorService
     {
         Task<double> GetAverageAQILast30DaysForAllSensors();
+        Task<List<AirQualityData>> GetLatestReadingsAsync(string sensorId, int maxCount = 100);
+
+
     }
     public class SensorService : ISensorService
     {
@@ -40,6 +43,15 @@ namespace SDTP_Project1.Services
                 .Average();
 
             return totalAverageAQI;
+        }
+
+        public async Task<List<AirQualityData>> GetLatestReadingsAsync(string sensorId, int maxCount = 100)
+        {
+            return await _dbContext.AirQualityData
+                .Where(d => d.SensorID == sensorId)
+                .OrderByDescending(d => d.Timestamp)
+                .Take(maxCount)
+                .ToListAsync();
         }
     }
 }

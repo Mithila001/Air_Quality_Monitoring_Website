@@ -73,7 +73,7 @@
         <div class="row">
             <!-- Left: Sensors -->
             <div class="col-lg-8">
-                <div class="row g-3 overflow-auto" style="max-height:60vh;">
+                <div class="row g-3 overflow-auto" style="max-height:60vh;" id="sensorList">
                     @foreach (var sensor in Model)
                     {
                         <div class="col-12">
@@ -94,7 +94,8 @@
                                         </div>
                                         <div class="col-md-3">
                                             <h6 class="fw-semibold">Status</h6>
-                                            <span id="status-@sensor.SensorID" class="badge @(sensor.IsActive ? "bg-success" : "bg-danger")">
+                                            <span id="status-@sensor.SensorID"
+                                                  class="badge sensor-status bg-@(sensor.IsActive ? "success" : "danger")">
                                                 @(sensor.IsActive ? "Active" : "Inactive")
                                             </span>
                                         </div>

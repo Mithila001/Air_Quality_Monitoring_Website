@@ -25,7 +25,18 @@
                                 </div>
                                 <p class="card-text mb-1">
                                     <span class="fw-bold">Latest AQI:</span>
-                                    <span class="@(sensor.LatestAQI > 50 ? "text-danger" : "text-success")">@sensor.LatestAQI</span>
+                                    @{
+                                        string aqiTextColor;
+                                        var aqi = sensor.LatestAQI ?? -1;
+                                        if (aqi < 0) aqiTextColor = "text-secondary";
+                                        else if (aqi <= 50) aqiTextColor = "text-success";
+                                        else if (aqi <= 100) aqiTextColor = "text-warning";
+                                        else if (aqi <= 150) aqiTextColor = "text-orange";  // custom or fallback to text-danger if no custom
+                                        else if (aqi <= 200) aqiTextColor = "text-danger";
+                                        else if (aqi <= 300) aqiTextColor = "text-purple";  // custom or fallback
+                                        else aqiTextColor = "text-maroon";                  // custom or fallback
+                                    }
+                                    <span class="@aqiTextColor">@sensor.LatestAQI</span>
                                 </p>
                                 <p class="card-text mb-0">
                                     <small class="text-muted">
@@ -34,9 +45,13 @@
                                     </small>
                                 </p>
                                 <div class="d-grid mt-2">
-                                    <button class="btn btn-outline-secondary btn-sm">
+                                    <button class="btn btn-outline-secondary btn-sm view-details-btn"
+                                            data-sensor-id="@sensor.SensorID"
+                                            data-sensor-city="@sensor.City">
                                         <i class="bi bi-eye-fill me-1"></i> View Details
                                     </button>
+
+
                                 </div>
                             </div>
                         </div>
@@ -57,6 +72,28 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for displaying sensor details -->
+<div class="modal fade" id="sensorDetailsModal" tabindex="-1"
+     aria-labelledby="sensorDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- we’ll overwrite this in JS -->
+                <h5 class="modal-title" id="sensorDetailsLabel">
+                    Sensor Readings
+                </h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- AJAX-loaded table goes here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 @section Scripts {
     <!-- Leaflet CSS -->

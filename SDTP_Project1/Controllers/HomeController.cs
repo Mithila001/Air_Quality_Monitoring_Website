@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SDTP_Project1.Data;
 using SDTP_Project1.Models;
+using SDTP_Project1.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +12,13 @@ namespace SDTP_Project1.Controllers
     public class HomeController : Controller
     {
         private readonly AirQualityDbContext _context;
+        private readonly ISensorService _sensorService;
 
-        public HomeController(AirQualityDbContext context)
+        public HomeController(AirQualityDbContext context, ISensorService _sensorService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            this._sensorService = _sensorService ?? throw new ArgumentNullException(nameof(_sensorService));
+
         }
 
         public async Task<IActionResult> Index()
@@ -61,6 +65,18 @@ namespace SDTP_Project1.Controllers
         public IActionResult Error(int statusCode)
         {
             return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
+        }
+
+
+        // This action is used to fetch the latest readings for a specific sensor.
+        [HttpGet]
+        public async Task<IActionResult> SensorDetails(string sensorId)
+        {
+            if (string.IsNullOrWhiteSpace(sensorId))
+                return BadRequest("Sensor ID is required.");
+
+            var readings = await _sensorService.GetLatestReadingsAsync(sensorId, 500);
+            return PartialView("_SensorDetailsPartial", readings);
         }
     }
 }

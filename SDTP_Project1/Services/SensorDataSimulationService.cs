@@ -79,23 +79,19 @@ namespace SDTP_Project1.Services
             var dataEntries = new List<AirQualityData>();
             foreach (var sensor in sensors)
             {
-                double pm25 = SimulationHelpers.SamplePM25();
-                double pm10 = SimulationHelpers.SamplePM10();
-                double o3 = SimulationHelpers.SampleO3();
-                double no2 = SimulationHelpers.SampleNO2();
-                double so2 = SimulationHelpers.SampleSO2();
-                double co = SimulationHelpers.SampleCO();
+                var (pm25, pm10, o3, no2, so2, co) = SimulationHelpers.SampleCorrelatedReadings();
+
 
                 dataEntries.Add(new AirQualityData
                 {
                     SensorID = sensor.SensorID,
                     Timestamp = now,
-                    PM2_5 = Round2(pm25),
-                    PM10 = Round2(pm10),
-                    O3 = Round2(o3),
-                    NO2 = Round2(no2),
-                    SO2 = Round2(so2),
-                    CO = Round2(co),
+                    PM2_5 = SimulationHelpers.Round2(pm25),
+                    PM10 = SimulationHelpers.Round2(pm10),
+                    O3 = SimulationHelpers.Round2(o3),
+                    NO2 = SimulationHelpers.Round2(no2),
+                    SO2 = SimulationHelpers.Round2(so2),
+                    CO = SimulationHelpers.Round2(co),
                     AQI = AqiCalculator.ComputeAqi(pm25, pm10, o3, no2, so2, co)
                 });
             }
