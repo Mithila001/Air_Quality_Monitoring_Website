@@ -78,6 +78,7 @@ function initMap(sensors) {
             ? Math.round(last7DaysReadings.reduce((sum, r) => sum + Number(r.AQI), 0) / last7DaysReadings.length)
             : 'N/A';
 
+        const avgStyle = getAQIStyle(avgAQI);
         // Get latest reading date and time
         let lastUpdateDate = 'N/A';
         let lastUpdateTime = 'N/A';
@@ -108,7 +109,13 @@ function initMap(sensors) {
         <span class="text-muted" style="font-size: 0.8rem;">Current AQI</span>
       </div>
       <div class="d-flex align-items-baseline">
-        <span class="fw-bold fs-4" style="color: ${hex};">${sensor.AQI ?? 'N/A'}</span>
+        
+        <span
+            class="badge rounded-lg fw-bold fs-5 ${badgeClass}"
+            style="background-color: ${hex}; color: ${textColor};"
+            >
+            ${sensor.AQI ?? 'N/A'}
+            </span>
       </div>
     </div>
     <div>
@@ -116,7 +123,11 @@ function initMap(sensors) {
         <span class="text-muted" style="font-size: 0.8rem;">7-day Avg</span>
       </div>
       <div class="d-flex align-items-baseline">
-        <span class="fw-bold fs-5" style="color: ${getAQIStyle(avgAQI).hex};">${avgAQI}</span>
+        <span class="badge rounded-lg fw-bold fs-5 ${avgStyle.badgeClass}"
+        style="background-color: ${avgStyle.hex}; color: ${avgStyle.textColor};"
+        >
+        ${avgAQI}
+        </span>
       </div>
     </div>
   </div>

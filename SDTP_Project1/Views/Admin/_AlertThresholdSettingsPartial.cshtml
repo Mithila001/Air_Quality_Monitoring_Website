@@ -8,7 +8,8 @@
     <form id="alertThresholdSettingsForm"
           asp-action="UpdateAlertThresholds"
           asp-controller="Admin"
-          method="post">
+          method="post" 
+          novalidate> <!-- disable native HTML5 & unobtrusive range checks -->
         @Html.AntiForgeryToken() @if (Model != null && Model.Any())
         {
             @foreach (var setting in Model)
@@ -20,7 +21,9 @@
                         </label>
                         <input type="number"
                                class="form-control threshold-value"
-                               asp-for="@setting.ThresholdValue" />
+                               value="@setting.ThresholdValue"
+                               min="0"
+                               step="0.01" />
                         <span asp-validation-for="@setting.ThresholdValue"
                               class="text-danger small"></span>
                     </div>
