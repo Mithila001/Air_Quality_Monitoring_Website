@@ -53,7 +53,10 @@ $(function () {
                     .text(resp.newIsActive ? "Active" : "Inactive");
 
                 // Recount deactivated
-                $("#deactivatedCount").text($(".badge.bg-danger").length);
+                $("#deactivatedCount").text(
+                    $("#sensorList .sensor-status.bg-danger").length
+                );
+
             },
             error(xhr) {
                 console.error("Toggle error:", xhr);
