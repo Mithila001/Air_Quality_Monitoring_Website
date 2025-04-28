@@ -66,25 +66,30 @@ namespace AQISystemUnit.Tests.Controllers
         [Fact]
         public async Task Login_ValidCredentials_SystemAdmin_ShouldRedirectToSystemAdmin()
         {
+            // Arrange
             var user = new AdminUser
             {
                 Id = 1,
                 Name = "Admin",
                 Email = "admin@test.com",
-                PasswordHash = "hashed",
-                UserRole = "System Admin"
+                PasswordHash = "hashed", // Assuming the password has been hashed appropriately
+                UserRole = "System Admin",
+                IsActive = true
             };
 
             _mockUserRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(new List<AdminUser> { user });
             _mockPasswordHasher.Setup(h => h.VerifyHashedPassword(user, user.PasswordHash, "password"))
                                .Returns(PasswordVerificationResult.Success);
 
+            // Act
             var result = await _controller.Login("admin@test.com", "password");
 
+            // Assert
             var redirectResult = result.Should().BeOfType<RedirectToActionResult>().Subject;
             redirectResult.ActionName.Should().Be("Index");
             redirectResult.ControllerName.Should().Be("SystemAdmin");
         }
+
 
         [Fact]
         public async Task Login_InvalidEmail_ShouldReturnViewWithError()
