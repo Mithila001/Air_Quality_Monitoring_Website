@@ -54,7 +54,7 @@ To set up and run this project locally, follow these steps:
     - Locate the `"DefaultConnection"` string within the `"ConnectionStrings"` section.
     - **Replace the placeholder with your actual SQL Server connection string.**
       Example:
-      ```json
+      ```
       {
         "ConnectionStrings": {
           "DefaultConnection": "Server=your_server_name;Database=YourAirQualityDB;Integrated Security=True;TrustServerCertificate=True;"
