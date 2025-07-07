@@ -88,9 +88,9 @@ To set up and run this project locally, follow these steps:
 ![Home Page 2 Screenshot](screenshots/Home_AQI_Info.png)
 ![Home Page 3 Screenshot](screenshots/Home_AQI_Table.png)
 
-### System Admin
+### Admin
 
-![System Admin Screenshot](screenshots/userAdmin.png)
+![Admin Screenshot](screenshots/userAdmin.png)
 
 ### Super Admin
 
